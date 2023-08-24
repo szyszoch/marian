@@ -10,6 +10,7 @@ typedef struct shader {
 } shader_t;
 
 shader_t shader_create(const char* vertex_shader_source, const char* fragment_shader_source);
+void shader_destroy(shader_t shader);
 void shader_bind(shader_t shader);
 void shader_set_int(shader_t shader, const char* name, int value);
 void shader_set_uint(shader_t shader, const char* name, unsigned int value);

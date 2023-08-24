@@ -45,6 +45,11 @@ shader_t shader_create(const char* vertex_shader_source, const char* fragment_sh
     return new_shader;
 }
 
+void shader_destroy(shader_t shader)
+{
+    glDeleteProgram(shader.id);
+}
+
 void shader_bind(shader_t shader)
 {
     glUseProgram(shader.id);
