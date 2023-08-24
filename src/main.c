@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 #include <stdio.h>
+#include <shader.h>
 
 const char* vertex_shader_source = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -59,34 +60,18 @@ int main()
         1, 2, 3
     };
 
-    unsigned int VBO;
+    GLuint VBO;
     glGenBuffers(1, &VBO);
-    unsigned int EBO;
+    GLuint EBO;
     glGenBuffers(1, &EBO);
-    unsigned int VAO; 
+    GLuint VAO; 
     glGenVertexArrays(1, &VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
-    glCompileShader(vertex_shader);
-
-    unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
-    glCompileShader(fragment_shader);
-
-    unsigned int shader_program = glCreateProgram();
-    
-    glAttachShader(shader_program, vertex_shader);
-    glAttachShader(shader_program, fragment_shader);
-    glLinkProgram(shader_program);
-    
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
-
-    glUseProgram(shader_program);
+    shader_t shader = shader_create(vertex_shader_source, fragment_shader_source);
+    shader_bind(shader);
 
     glBindVertexArray(VAO); 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
