@@ -49,3 +49,33 @@ void shader_bind(shader_t shader)
 {
     glUseProgram(shader.id);
 }
+
+void shader_set_int(shader_t shader, const char* name, int value)
+{
+    glUniform1i(glGetUniformLocation(shader.id, name), value);
+}
+
+void shader_set_uint(shader_t shader, const char* name, unsigned int value)
+{
+    glUniform1ui(glGetUniformLocation(shader.id, name), value);
+}
+
+void shader_set_float(shader_t shader, const char* name, float value)
+{
+    glUniform1f(glGetUniformLocation(shader.id, name), value);
+}
+
+void shader_set_vec2(shader_t shader, const char* name, float value1, float value2)
+{
+    glUniform2f(glGetUniformLocation(shader.id, name), value1, value2);
+}
+
+void shader_set_vec3(shader_t shader, const char* name, float value1, float value2, float value3)
+{
+    glUniform3f(glGetUniformLocation(shader.id, name), value1, value2, value3);
+}
+
+void shader_set_vec4(shader_t shader, const char* name, float value1, float value2, float value3, float value4)
+{
+    glUniform4f(glGetUniformLocation(shader.id, name), value1, value2, value3, value4);
+}
