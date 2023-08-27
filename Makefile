@@ -22,14 +22,9 @@ endif
 all: dirs libs marian
 
 dirs:
-ifeq ($(wildcard bin),)
-	@echo Creating directory bin
-	@mkdir bin
-endif
-ifeq ($(wildcard objects),)
-	@echo Creating directory objects
-	@mkdir objects
-endif
+	@echo Creating directories
+	@mkdir -p bin
+	@mkdir -p objects
 
 libs:
 ifeq ($(wildcard lib/glfw/src/libglfw3.a),)
@@ -40,19 +35,18 @@ endif
 	@$(COMPILER) -o objects/glad.o -Ilib/glad -c lib/glad/glad.c
 
 SOURCE = $(wildcard src/*.c)
-OBJECTS  = $(addprefix objects/, $(notdir $(patsubst %.c, %.o, $(SOURCE)) ) )
+OBJECTS = $(patsubst src/%.c, objects/%.o, $(SOURCE))
 LIB_OBJECTS = objects/glad.o
 
 marian: $(OBJECTS)
 	@echo Compiling program
-	@$(COMPILER) -o bin/$(PROGRAM) $(OBJECTS) $(LIB_OBJECTS) $(LINKER_FLAGS)
+	@$(COMPILER) -o bin/$(PROGRAM) $^ $(LIB_OBJECTS) $(LINKER_FLAGS)
 
 objects/%.o: src/%.c
 	@echo Compiling $<
 	@$(COMPILER) -o $@ -c $< $(COMPILER_FLAGS)
 
 clean:
-	@echo Deleting directory bin
+	@echo Deleting directories
 	@$(CLEAN_COMMAND) bin 
-	@echo Deleting directory objects
 	@$(CLEAN_COMMAND) objects
