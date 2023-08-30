@@ -3,9 +3,9 @@ COMPILER = gcc
 COMPILER_FLAGS = -std=c11
 COMPILER_FLAGS += -O3
 COMPILER_FLAGS += -Wall -Wextra -Wstrict-aliasing -Wno-int-conversion
-COMPILER_FLAGS += -Ilib -Ilib/glfw/include -Isrc
+COMPILER_FLAGS += -Ilib/glad/ -Ilib/glfw/include -Isrc -Ilib/cglm/include
 
-LINKER_FLAGS = lib/glfw/src/libglfw3.a
+LINKER_FLAGS = lib/glfw/src/libglfw3.a lib/cglm/libcglm.a
 
 ifeq ($(OS), Windows_NT)
     PROGRAM = marian.exe
@@ -32,7 +32,11 @@ ifeq ($(wildcard lib/glfw/src/libglfw3.a),)
 	@cd lib/glfw && cmake -G "Unix Makefiles" $(SUPPRESS_COMMAND_OUTPUT) && make $(SUPPRESS_COMMAND_OUTPUT)
 endif
 	@echo Compiling glad
-	@$(COMPILER) -o objects/glad.o -Ilib/glad -c lib/glad/glad.c
+	@$(COMPILER) -o objects/glad.o -Ilib/glad/glad -c lib/glad/glad/glad.c
+ifeq ($(wildcard lib/cglm/libcglm.a),)	
+	@echo Compiling cglm
+	@cd lib/cglm && cmake -DCGLM_STATIC=ON $(SUPPRESS_COMMAND_OUTPUT) && make $(SUPPRESS_COMMAND_OUTPUT)
+endif
 
 SOURCE = $(wildcard src/*.c)
 OBJECTS = $(patsubst src/%.c, objects/%.o, $(SOURCE))
