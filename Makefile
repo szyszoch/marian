@@ -23,19 +23,24 @@ all: dirs libs marian
 
 dirs:
 	@echo Creating directories
+ifeq ($(OS), Windows_NT)
+	@if not exist "bin" mkdir bin
+	@if not exist "objects" mkdir objects
+else
 	@mkdir -p bin
 	@mkdir -p objects
+endif
 
 libs:
 ifeq ($(wildcard lib/glfw/src/libglfw3.a),)
 	@echo Compiling glfw3
-	@cd lib/glfw && cmake -G "Unix Makefiles" $(SUPPRESS_COMMAND_OUTPUT) && make $(SUPPRESS_COMMAND_OUTPUT)
+	@cd lib/glfw && cmake . -G "Unix Makefiles" $(SUPPRESS_COMMAND_OUTPUT) && make $(SUPPRESS_COMMAND_OUTPUT)
 endif
 	@echo Compiling glad
 	@$(COMPILER) -o objects/glad.o -Ilib/glad/glad -c lib/glad/glad/glad.c
 ifeq ($(wildcard lib/cglm/libcglm.a),)	
 	@echo Compiling cglm
-	@cd lib/cglm && cmake -DCGLM_STATIC=ON $(SUPPRESS_COMMAND_OUTPUT) && make $(SUPPRESS_COMMAND_OUTPUT)
+	@cd lib/cglm && cmake . -DCGLM_STATIC=ON -G "Unix Makefiles" $(SUPPRESS_COMMAND_OUTPUT) && make $(SUPPRESS_COMMAND_OUTPUT)
 endif
 
 SOURCE = $(wildcard src/*.c)
