@@ -9,5 +9,6 @@ typedef struct texture {
 } texture_t;
 
 texture_t texture_load_image(const sprite_t* sprite);
+void texture_bind(texture_t texture);
 
 #endif
