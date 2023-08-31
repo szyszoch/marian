@@ -15,7 +15,7 @@ typedef struct sprite {
     unsigned int height;
 } sprite_t;
 
-sprite_t sprite_get(unsigned int sprite_id, palette_t palette);
+sprite_t sprite_get(unsigned int sprite_id, unsigned int palette_id);
 void sprite_destroy(sprite_t sprite);
 
 #endif

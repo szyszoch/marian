@@ -14,21 +14,9 @@ static void fill_pixels(sprite_t sprite, unsigned int tile_id, palette_t palette
     }
 }
 
-static void flip_pixels_upside_down(sprite_t sprite) 
+sprite_t sprite_get(unsigned int sprite_id, unsigned int palette_id)
 {
-    unsigned int size = sprite.height * sprite.width;
-    unsigned char buffer[size];
-    memcpy(buffer, sprite.pixels, size);
-
-    for(unsigned int y = 0; y < sprite.height; y++) {
-        for (unsigned int x = 0; x < sprite.width; x++) {
-            sprite.pixels[y * sprite.width + x] = buffer[(sprite.height - y - 1) * sprite.width + x];
-        }
-    }
-}
-
-sprite_t sprite_get(unsigned int sprite_id, palette_t palette)
-{
+    palette_t palette = palette_get(palette_id);
     sprite_t sprite;
     
     switch(sprite_id) {
@@ -43,7 +31,6 @@ sprite_t sprite_get(unsigned int sprite_id, palette_t palette)
             break;
     }
 
-    flip_pixels_upside_down(sprite);
     return sprite;
 }
 
