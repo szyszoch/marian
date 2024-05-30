@@ -1,12 +1,12 @@
 NAME := marian
 SRCS := $(wildcard src/*.c src/**/*.c) 
-OBJS := $(SRCS:src/%.c=obj/%.o)
+OBJS := $(SRCS:src/%.c=obj/%.o) obj/glad.o
 
 CC := gcc
 CFLAGS := -Wall -Wextra -Werror
 CPPFLAGS := -I ./src -I ./lib -I ./lib/glfw/include
 LDFLAGS := -Llib/glfw/build/src
-LDLIBS := -lglfw3 -lgdi32 
+LDLIBS := -lglfw3 -lgdi32
 
 all: dirs libs $(NAME)
 
