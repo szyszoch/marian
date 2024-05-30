@@ -1,29 +1,39 @@
 NAME := marian
-BIN_DIR := bin
-
-SRC_DIR := src
-SRCS := $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/**/*.c)
-
-OBJ_DIR := obj
-OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+SRCS := $(wildcard src/*.c src/**/*.c) 
+OBJS := $(SRCS:src/%.c=obj/%.o)
 
 CC := gcc
 CFLAGS := -Wall -Wextra -Werror
-CPPFLAGS := -I ./src
+CPPFLAGS := -I ./src -I ./lib -I ./lib/glfw/include
+LDFLAGS := -Llib/glfw/build/src
+LDLIBS := -lglfw3 -lgdi32 
 
-all: $(NAME)
+all: dirs libs $(NAME)
+
+dirs:
+	@if not exist obj mkdir obj
+	@if not exist bin mkdir bin
+
+libs:
+	$(info Compiling glad library)
+	@$(CC) -o obj/glad.o -c lib/glad/glad.c -Ilib/glad
+	$(info Compiling glfw library)
+	@cd lib/glfw && \
+		cmake -S . -B build -D GLFW_BUILD_DOCS=off -D GLFW_BUILD_EXAMPLES=off \
+		-D GLFW_BUILD_TESTS=off -G "Unix Makefiles" && \
+		cd build && \
+		make --silent
 
 $(NAME): $(OBJS)
-	@if not exist $(BIN_DIR) mkdir $(BIN_DIR)
 	$(info Compiling program)
-	@$(CC) $(OBJS) -o $(BIN_DIR)/$(NAME)
+	@$(CC) $(LDFLAGS) $(OBJS) $(LDLIBS) -o bin/$(NAME)
 	$(info Compiling completed)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+obj/%.o: src/%.c
 	@if not exist $(subst /,\\,$(@D)) mkdir $(subst /,\\,$(@D))
 	$(info Compiling $<)
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 clean:
-	@if exist $(OBJ_DIR) rmdir /s /q $(OBJ_DIR)
-	@if exist $(BIN_DIR) rmdir /s /q $(BIN_DIR)
+	@if exist obj rmdir /s /q obj
+	@if exist bin rmdir /s /q bin
