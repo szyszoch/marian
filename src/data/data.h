@@ -18,11 +18,15 @@
 
 #define TILE_COUNT          0x08
 
-#define PALETTE_OVERWORLD_GROUND_AND_STONE 0x00
-#define PALETTE_COUNT 0x01
+#define PALETTE_OVERWORLD_GROUND_AND_STONE  0x00
+#define PALETTE_COUNT                       0x01
 
 #define TEXTURE_GROUND  0x00
 #define TEXTURE_COUNT   0x01
+
+#define SHADER_VERTEX_2D_TEXTURES           0x00
+#define SHADER_FRAGMENT_INDEXED_TILEMAP     0x01
+#define SHADER_COUNT                        0x02
 
 typedef struct color {
     unsigned char r;
@@ -46,5 +50,6 @@ typedef struct texture {
 void data_get_tile(unsigned char tile, unsigned char output[64]);
 void data_get_palette(unsigned char palette, palette_t *output);
 void data_get_texture(unsigned char texture, texture_t *output);
+const char *data_get_shader(unsigned char shader);
 
 #endif
