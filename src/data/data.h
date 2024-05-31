@@ -1,6 +1,11 @@
 #ifndef DATA_H
 #define DATA_H
 
+#define FLIP_NONE       0x00
+#define FLIP_RIGHT      0x01
+#define FLIP_HORIZONTAL 0x02
+#define FLIP_VERTICAL   0x04
+
 #define TILE_NONE           0x00
 #define TILE_FIRST_COLOR    0x01
 #define TILE_SECOND_COLOR   0x02
@@ -16,6 +21,9 @@
 #define PALETTE_OVERWORLD_GROUND_AND_STONE 0x00
 #define PALETTE_COUNT 0x01
 
+#define TEXTURE_GROUND  0x00
+#define TEXTURE_COUNT   0x01
+
 typedef struct color {
     unsigned char r;
     unsigned char g;
@@ -28,7 +36,15 @@ typedef struct palette {
     color_t third_color;
 } palette_t;
 
+typedef struct texture {
+    unsigned char width;
+    unsigned char height;
+    unsigned char *tiles;
+    unsigned char *flips;
+} texture_t;
+
 void data_get_tile(unsigned char tile, unsigned char output[64]);
 void data_get_palette(unsigned char palette, palette_t *output);
+void data_get_texture(unsigned char texture, texture_t *output);
 
 #endif
