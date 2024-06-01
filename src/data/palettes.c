@@ -12,6 +12,21 @@ static const palette_t palettes[] = {
         .second_color = {0x9c, 0x4a, 0x00},
         .third_color =  {0x00, 0x00, 0x00},
     },
+    {
+        .first_color =  {0xb5, 0xef, 0xef},
+        .second_color = {0x00, 0x7b, 0x8c},
+        .third_color =  {0x00, 0x00, 0x00},
+    },
+    {
+        .first_color =  {0xff, 0xff, 0xff},
+        .second_color = {0xad, 0xad, 0xad},
+        .third_color =  {0x63, 0x63, 0x63},
+    },
+    {
+        .first_color =  {0xbd, 0xf7, 0xad},
+        .second_color = {0x10, 0x94, 0x00},
+        .third_color =  {0x00, 0x00, 0x00},
+    },
 };
 
 void data_get_palette(unsigned char palette, palette_t *output)
