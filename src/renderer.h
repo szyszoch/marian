@@ -7,5 +7,6 @@ int renderer_init();
 void renderer_destroy();
 void renderer_render(unsigned char tile, short x, short y,
                      unsigned char palette);
+void renderer_present();
 
 #endif

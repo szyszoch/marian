@@ -3,7 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX_INSTANCES_TO_RENDER 256
+
 static unsigned int shader;
+
+static struct {
+    float pos[MAX_INSTANCES_TO_RENDER][2];
+    float tile[MAX_INSTANCES_TO_RENDER];
+    float palette[MAX_INSTANCES_TO_RENDER];
+    unsigned int count;
+} render_list;
 
 static struct {
     unsigned int vao;
@@ -110,20 +119,22 @@ int renderer_init()
     };
     glGenBuffers(1, &buffers.quad);
     glBindBuffer(GL_ARRAY_BUFFER, buffers.quad);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quad) * MAX_INSTANCES_TO_RENDER, quad,
+                 GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, 0, 0, NULL);
     glEnableVertexAttribArray(0);
 
     glGenBuffers(1, &buffers.pos);
     glBindBuffer(GL_ARRAY_BUFFER, buffers.pos);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * MAX_INSTANCES_TO_RENDER, 
+                 NULL, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(1, 2, GL_FLOAT, 0, 0, NULL);
     glVertexAttribDivisor(1, 1);
     glEnableVertexAttribArray(1);
 
     glGenBuffers(1, &buffers.tile);
     glBindBuffer(GL_ARRAY_BUFFER, buffers.tile);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float), NULL,
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MAX_INSTANCES_TO_RENDER, NULL,
                  GL_DYNAMIC_DRAW);
     glVertexAttribPointer(2, 1, GL_FLOAT, 0, 0, NULL);
     glVertexAttribDivisor(2, 1);
@@ -131,7 +142,7 @@ int renderer_init()
 
     glGenBuffers(1, &buffers.palette);
     glBindBuffer(GL_ARRAY_BUFFER, buffers.palette);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float), NULL,
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MAX_INSTANCES_TO_RENDER, NULL,
                  GL_DYNAMIC_DRAW);
     glVertexAttribPointer(3, 1, GL_FLOAT, 0, 0, NULL);
     glVertexAttribDivisor(3, 1);
@@ -199,18 +210,31 @@ void renderer_destroy()
 void renderer_render(unsigned char tile, short x, short y,
                      unsigned char palette)
 {
-    float pos[2] = {(float) x, (float) y};
-    float ftile = tile;
-    float fpalette = palette;
+    if (render_list.count >= MAX_INSTANCES_TO_RENDER) {
+        fprintf(stderr, "The limit of instances has been exceeded\n");
+        return;
+    }
+    render_list.pos[render_list.count][0] = (float) x;
+    render_list.pos[render_list.count][1] = (float) y;
+    render_list.tile[render_list.count] = (float) tile;
+    render_list.palette[render_list.count] = (float) palette;
+    render_list.count++;
+}
 
+void renderer_present()
+{
     glBindBuffer(GL_ARRAY_BUFFER, buffers.pos);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 2, pos);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 2 *
+                    render_list.count, render_list.pos);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers.tile);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float), &ftile);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) *
+                    render_list.count, render_list.tile);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers.palette);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float), &fpalette);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 
+                    render_list.count, render_list.palette);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, render_list.count);
+    render_list.count = 0;
 }
