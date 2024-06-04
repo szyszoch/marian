@@ -42,9 +42,35 @@ void window_destroy()
 void window_update()
 {
     glfwSwapBuffers(window);
+    glfwPollEvents();
 }
 
 int window_is_open()
 {
     return !glfwWindowShouldClose(window);
+}
+
+int window_pressed_right_arrow()
+{
+    return glfwGetKey(window, GLFW_KEY_RIGHT);
+}
+
+int window_pressed_left_arrow()
+{
+    return glfwGetKey(window, GLFW_KEY_LEFT);
+}
+
+int window_pressed_down_arrow()
+{
+    return glfwGetKey(window, GLFW_KEY_DOWN);
+}
+
+int window_pressed_up_arrow()
+{
+    return glfwGetKey(window, GLFW_KEY_UP);
+}
+
+int window_pressed_escape()
+{
+    return glfwGetKey(window, GLFW_KEY_ESCAPE);
 }
