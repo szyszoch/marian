@@ -5,6 +5,7 @@
 #include "settings.h"
 
 static unsigned int shader;
+float background_color[3];
 
 static struct {
     float pos[BATCH_SIZE][2];
@@ -183,6 +184,7 @@ int renderer_init()
                         GL_UNSIGNED_BYTE, &palette);
     }
 
+    renderer_set_background_color(0, 0, 0);
     return glGetError();
 }
 
@@ -229,4 +231,19 @@ void renderer_present()
 
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, render_list.count);
     render_list.count = 0;
+}
+
+void renderer_clear()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(background_color[0], background_color[1], background_color[2],
+                 1.0f);
+}
+
+void renderer_set_background_color(unsigned char r, unsigned char g,
+                                   unsigned char b)
+{
+    background_color[0] = (float) r / 0xff;
+    background_color[1] = (float) g / 0xff;
+    background_color[2] = (float) b / 0xff;
 }
