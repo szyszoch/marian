@@ -1,8 +1,13 @@
 #include <glad/glad.h>
-#include "renderer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "settings.h"
+#include "renderer.h"
+
+extern const char *assets_fragment_shader;
+extern const char *assets_vertex_shader;
+extern const unsigned int assets_tiles[][4];
+extern const unsigned char assets_palettes[][3][3];
 
 static unsigned int shader;
 float background_color[3];
@@ -35,16 +40,19 @@ static struct {
     unsigned int palettes;
 } textures;
 
+void parse_tile_data(unsigned char *dst, const unsigned int *src)
+{
+    for (unsigned char i = 0; i < 64; i++)
+        dst[i] = src[i / 16] >> (30 - (i * 2 % 32)) & 3;
+}
+
 int renderer_init()
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const char *vertex_src = data_get_shader(SHADER_VERTEX_2D_TEXTURES);
-    const char *frag_src = data_get_shader(SHADER_FRAGMENT_INDEXED_TILEMAP);
-
     unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_src, NULL);
+    glShaderSource(vertex_shader, 1, &assets_vertex_shader, NULL);
     glCompileShader(vertex_shader);
 
     int result = 0;
@@ -61,7 +69,7 @@ int renderer_init()
     }
 
     unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &frag_src, NULL);
+    glShaderSource(fragment_shader, 1, &assets_fragment_shader, NULL);
     glCompileShader(fragment_shader);
 
     glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &result);
@@ -163,7 +171,7 @@ int renderer_init()
                  GL_UNSIGNED_BYTE, NULL);
     for (unsigned char i = 0; i < TILE_COUNT; i++) {
         unsigned char tile[64];
-        data_get_tile(i, tile);
+        parse_tile_data(tile, assets_tiles[i]);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 8 * i, 0, 8, 8, GL_RED,
                         GL_UNSIGNED_BYTE, tile);
     }
@@ -178,10 +186,8 @@ int renderer_init()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 3, PALETTE_COUNT, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, NULL);
     for (unsigned char i = 0; i < PALETTE_COUNT; i++) {
-        palette_t palette;
-        data_get_palette(i, &palette);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, i, 3, 1, GL_RGB,
-                        GL_UNSIGNED_BYTE, &palette);
+                        GL_UNSIGNED_BYTE, assets_palettes[i]);
     }
 
     renderer_set_background_color(0, 0, 0);

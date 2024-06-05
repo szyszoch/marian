@@ -1,7 +1,4 @@
-#include <stddef.h>
-#include "data.h"
-
-static const char *shaders[] = {
+const char *assets_vertex_shader =
     "#version 330 core\n"
     "layout (location = 0) in vec2 quad;\n"
     "layout (location = 1) in vec2 pos;\n"
@@ -22,29 +19,4 @@ static const char *shaders[] = {
         "vec2 position = quad * tile_width * pixel_size + clip_offset;\n"
         "position.y *= -1.0;\n"
         "gl_Position = vec4(position, 0.0, 1.0);\n"
-    "}\n",
-
-    "#version 330 core\n"
-    "uniform sampler2D tiles;\n"
-    "uniform sampler2D palettes;\n"
-    "uniform float palette_count;\n"
-    "in vec2 ui;\n"
-    "in float fpalette;\n"
-    "out vec4 color;\n"
-    "void main()\n"
-    "{\n"
-        "float index = texture(tiles, ui).r * 255.0;\n"
-        "if (index == 0.0) color = vec4(0.0, 0.0, 0.0, 0.0);\n"
-        "else {\n"
-            "vec2 vpalette = vec2(index / 3.0, fpalette/(palette_count - 1));\n"
-            "color = texture(palettes, vpalette);\n"
-        "}\n"
-    "}\n",
-};
-
-const char *data_get_shader(unsigned char shader)
-{
-    if (shader >= SHADER_COUNT)
-        return NULL;
-    return shaders[shader];
-}
+    "}\n";

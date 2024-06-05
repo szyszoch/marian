@@ -1,5 +1,3 @@
-#include "data.h"
-
 /**
  * Every tile in the program is an 8x8 texture with only 4 colours.
  * They are also indexed textures, which means they store only indexes to
@@ -8,7 +6,7 @@
  * unsigned ints to store one tile.
  */
 
-static const unsigned int tiles[][4] = {
+const unsigned int assets_tiles[][4] = {
     {0x00000000, 0x00000000, 0x00000000, 0x00000000},
     {0x55555555, 0x55555555, 0x55555555, 0x55555555},
     {0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa},
@@ -59,11 +57,3 @@ static const unsigned int tiles[][4] = {
     {0x00000000, 0x00000000, 0x00000000, 0x01400140},
     {0x05501004, 0x41414401, 0x44014141, 0x10040550},
 };
-
-void data_get_tile(unsigned char tile, unsigned char output[64])
-{
-    if (tile >= TILE_COUNT)
-        return;
-    for (unsigned char i = 0; i < 64; i++)
-        output[i] = tiles[tile][i / 16] >> (30 - (i * 2 % 32)) & 3;
-}
