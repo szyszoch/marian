@@ -84,5 +84,10 @@ void renderer_present();
 void renderer_clear();
 void renderer_set_background_color(unsigned char r, unsigned char g,
                                    unsigned char b);
+void renderer_render_number_with_zero_padding(unsigned int number,
+                                              unsigned char size, short x,
+                                              short y);
+void renderer_render_number(unsigned int number, short x, short y);
+void render_1_player_hud();
 
 #endif

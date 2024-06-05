@@ -9,6 +9,11 @@ extern const char *assets_vertex_shader;
 extern const unsigned int assets_tiles[][4];
 extern const unsigned char assets_palettes[][3][3];
 
+static const unsigned char digits_tiles[10] = {
+    TILE_0, TILE_1, TILE_2, TILE_3, TILE_4,
+    TILE_5, TILE_6, TILE_7, TILE_8, TILE_9,
+};
+
 static unsigned int shader;
 float background_color[3];
 
@@ -252,4 +257,24 @@ void renderer_set_background_color(unsigned char r, unsigned char g,
     background_color[0] = (float) r / 0xff;
     background_color[1] = (float) g / 0xff;
     background_color[2] = (float) b / 0xff;
+}
+
+void renderer_render_number_with_zero_padding(unsigned int number,
+                                              unsigned char size, short x,
+                                              short y)
+{
+    while(size--) {
+        renderer_render(digits_tiles[number % 10], x + size * 8, y,
+                        PALETTE_CASTLE_GROUND_AND_STONE);
+        number /= 10;
+    } 
+}
+
+void renderer_render_number(unsigned int number, short end_x, short y)
+{
+    do {
+        renderer_render(digits_tiles[number % 10], end_x, y,
+                        PALETTE_CASTLE_GROUND_AND_STONE);
+        end_x -= 8;
+    } while (number /= 10);
 }
