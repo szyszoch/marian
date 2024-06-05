@@ -9,14 +9,6 @@ extern const char *assets_vertex_shader;
 extern const unsigned int assets_tiles[][4];
 extern const unsigned char assets_palettes[][3][3];
 
-static const unsigned char digits_tiles[10] = {
-    TILE_0, TILE_1, TILE_2, TILE_3, TILE_4,
-    TILE_5, TILE_6, TILE_7, TILE_8, TILE_9,
-};
-
-static unsigned int shader;
-float background_color[3];
-
 static struct {
     float pos[BATCH_SIZE][2];
     float tile[BATCH_SIZE];
@@ -45,13 +37,16 @@ static struct {
     unsigned int palettes;
 } textures;
 
-void parse_tile_data(unsigned char *dst, const unsigned int *src)
+static unsigned int shader;
+static float background_color[3];
+
+static void parse_tile_data(unsigned char *dst, const unsigned int *src)
 {
     for (unsigned char i = 0; i < 64; i++)
         dst[i] = src[i / 16] >> (30 - (i * 2 % 32)) & 3;
 }
 
-int renderer_init()
+int init_renderer()
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -195,11 +190,11 @@ int renderer_init()
                         GL_UNSIGNED_BYTE, assets_palettes[i]);
     }
 
-    renderer_set_background_color(0, 0, 0);
+    set_background_color(0, 0, 0);
     return glGetError();
 }
 
-void renderer_destroy()
+void destroy_renderer()
 {
     glDeleteTextures(1, &textures.tiles);
     glDeleteTextures(1, &textures.palettes);
@@ -211,11 +206,10 @@ void renderer_destroy()
     glDeleteProgram(shader);
 }
 
-void renderer_render(unsigned char tile, short x, short y,
-                     unsigned char palette)
+void render_tile(unsigned char tile, short x, short y, unsigned char palette)
 {
     if (render_list.count >= BATCH_SIZE) {
-        renderer_present();
+        present_renderer();
     }
     else {
         render_list.pos[render_list.count][0] = (float) x;
@@ -226,7 +220,7 @@ void renderer_render(unsigned char tile, short x, short y,
     }
 }
 
-void renderer_present()
+void present_renderer()
 {
     glBindBuffer(GL_ARRAY_BUFFER, buffers.pos);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 2 *
@@ -244,14 +238,14 @@ void renderer_present()
     render_list.count = 0;
 }
 
-void renderer_clear()
+void clear_renderer()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(background_color[0], background_color[1], background_color[2],
                  1.0f);
 }
 
-void renderer_set_background_color(unsigned char r, unsigned char g,
+void set_background_color(unsigned char r, unsigned char g,
                                    unsigned char b)
 {
     background_color[0] = (float) r / 0xff;
@@ -259,22 +253,13 @@ void renderer_set_background_color(unsigned char r, unsigned char g,
     background_color[2] = (float) b / 0xff;
 }
 
-void renderer_render_number_with_zero_padding(unsigned int number,
-                                              unsigned char size, short x,
-                                              short y)
+void render_set_of_tiles(const unsigned char *tiles, short x, short y,
+                         unsigned char width, unsigned char height,
+                         unsigned char palette)
 {
-    while(size--) {
-        renderer_render(digits_tiles[number % 10], x + size * 8, y,
-                        PALETTE_CASTLE_GROUND_AND_STONE);
-        number /= 10;
-    } 
-}
-
-void renderer_render_number(unsigned int number, short end_x, short y)
-{
-    do {
-        renderer_render(digits_tiles[number % 10], end_x, y,
-                        PALETTE_CASTLE_GROUND_AND_STONE);
-        end_x -= 8;
-    } while (number /= 10);
+    for (unsigned char w = 0; w < width; w++) {
+        for (unsigned char h = 0; h < height; h++) {
+            render_tile(tiles[w + h * width], x + w * 8, y + h * 8, palette);
+        }
+    }
 }

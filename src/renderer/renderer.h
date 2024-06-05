@@ -76,18 +76,21 @@
 #define PALETTE_UNDERWATER_COINS_3 0x0f
 #define PALETTE_COUNT 0x10
 
-int renderer_init();
-void renderer_destroy();
-void renderer_render(unsigned char tile, short x, short y,
-                     unsigned char palette);
-void renderer_present();
-void renderer_clear();
-void renderer_set_background_color(unsigned char r, unsigned char g,
+int init_renderer();
+void destroy_renderer();
+void render_tile(unsigned char tile, short x, short y, unsigned char palette);
+void present_renderer();
+void clear_renderer();
+void set_background_color(unsigned char r, unsigned char g,
                                    unsigned char b);
-void renderer_render_number_with_zero_padding(unsigned int number,
-                                              unsigned char size, short x,
-                                              short y);
-void renderer_render_number(unsigned int number, short x, short y);
+void render_set_of_tiles(const unsigned char *tiles, short x, short y,
+                         unsigned char width, unsigned char height,
+                         unsigned char palette);
+void render_number_with_zero_padding(unsigned int number, unsigned char size,
+                                     short x, short y);
+void render_number(unsigned int number, short end_x, short y);
+void render_text(const char *text, short x, short y);
 void render_1_player_hud();
+void render_copyright(short x, short y);
 
 #endif
