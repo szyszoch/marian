@@ -31,6 +31,7 @@ int window_init()
     }
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glfwSetWindowSizeCallback(window, resize_callback);
+    glfwSwapInterval(1);
     return 0;
 }
 
