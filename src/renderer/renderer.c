@@ -46,66 +46,54 @@ static void parse_tile_data(unsigned char *dst, const unsigned int *src)
         dst[i] = src[i / 16] >> (30 - (i * 2 % 32)) & 3;
 }
 
+static unsigned int init_shader(unsigned int t, const char *src)
+{
+    unsigned int sh = glCreateShader(t);
+    glShaderSource(sh, 1, &src, NULL);
+    glCompileShader(sh);
+    int ll;
+    glGetShaderiv(sh, GL_INFO_LOG_LENGTH, &ll);
+    if (ll) {
+        char *b = malloc(ll);
+        glGetShaderInfoLog(sh, ll, NULL, b);
+        fprintf(stderr, "Shader error:\n%s\n", b);
+        free(b);
+        glDeleteShader(sh);
+        sh = 0;
+    }
+    return sh;
+}
+
+static unsigned int init_program(const char *vs, const char *fs)
+{
+    unsigned int v = init_shader(GL_VERTEX_SHADER, vs);
+    unsigned int f = init_shader(GL_FRAGMENT_SHADER, fs);
+    unsigned int p = glCreateProgram();
+    glAttachShader(p, v);
+    glAttachShader(p, f);
+    glLinkProgram(p);
+    glDeleteShader(v);
+    glDeleteShader(f);
+    int ll;
+    glGetProgramiv(p, GL_INFO_LOG_LENGTH, &ll);
+    if (ll) {
+        char *b = malloc(ll);
+        glGetProgramInfoLog(p, ll, NULL, b);
+        fprintf(stderr, "program error:\n%s\n", b);
+        free(b);
+        glDeleteProgram(p);
+        p = 0;
+    }
+    return p;
+}
+
 int init_renderer()
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &assets_vertex_shader, NULL);
-    glCompileShader(vertex_shader);
-
-    int result = 0;
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &result);
-    if (!result) {
-        int length;
-        glGetShaderiv(vertex_shader, GL_INFO_LOG_LENGTH, &length);
-        char *buffer = malloc(length);
-        glGetShaderInfoLog(vertex_shader, length, NULL, buffer);
-        fprintf(stderr, "Vertex shader error:\n%s\n", buffer);
-        free(buffer);
-        glDeleteShader(vertex_shader);
+    shader = init_program(assets_vertex_shader, assets_fragment_shader);
+    if (!shader)
         return -1;
-    }
-
-    unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &assets_fragment_shader, NULL);
-    glCompileShader(fragment_shader);
-
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &result);
-    if (!result) {
-        int length;
-        glGetShaderiv(fragment_shader, GL_INFO_LOG_LENGTH, &length);
-        char *buffer = malloc(length);
-        glGetShaderInfoLog(fragment_shader, length, NULL, buffer);
-        fprintf(stderr, "Fragment shader error:\n%s\n", buffer);
-        free(buffer);
-        glDeleteShader(vertex_shader);
-        glDeleteShader(fragment_shader);
-        return -1;
-    }
-
-    shader = glCreateProgram();
-    glAttachShader(shader, vertex_shader);
-    glAttachShader(shader, fragment_shader);
-    glLinkProgram(shader);
-
-    glGetProgramiv(shader, GL_LINK_STATUS, &result);
-    if (!result) {
-        int length;
-        glGetProgramiv(shader, GL_INFO_LOG_LENGTH, &length);
-        char *buffer = malloc(length);
-        glGetProgramInfoLog(shader, length, NULL, buffer);
-        fprintf(stderr, "%s\n", buffer);
-        free(buffer);
-        glDeleteShader(vertex_shader);
-        glDeleteShader(fragment_shader);
-        glDeleteProgram(shader);
-        return -1;
-    }
-
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
     glUseProgram(shader);
 
     glGenVertexArrays(1, &buffers.vao);
