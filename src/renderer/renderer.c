@@ -2,12 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "settings.h"
-#include "renderer.h"
-
-extern const char *assets_fragment_shader;
-extern const char *assets_vertex_shader;
-extern const unsigned int assets_tiles[][4];
-extern const unsigned char assets_palettes[][3][3];
+#include "renderer/renderer.h"
+#include "renderer/shader.h"
 
 static struct {
     float pos[BATCH_SIZE][2];
@@ -40,58 +36,11 @@ static struct {
 static unsigned int shader;
 static float background_color[3];
 
-static void parse_tile_data(unsigned char *dst, const unsigned int *src)
-{
-    for (unsigned char i = 0; i < 64; i++)
-        dst[i] = src[i / 16] >> (30 - (i * 2 % 32)) & 3;
-}
-
-static unsigned int init_shader(unsigned int t, const char *src)
-{
-    unsigned int sh = glCreateShader(t);
-    glShaderSource(sh, 1, &src, NULL);
-    glCompileShader(sh);
-    int ll;
-    glGetShaderiv(sh, GL_INFO_LOG_LENGTH, &ll);
-    if (ll) {
-        char *b = malloc(ll);
-        glGetShaderInfoLog(sh, ll, NULL, b);
-        fprintf(stderr, "Shader error:\n%s\n", b);
-        free(b);
-        glDeleteShader(sh);
-        sh = 0;
-    }
-    return sh;
-}
-
-static unsigned int init_program(const char *vs, const char *fs)
-{
-    unsigned int v = init_shader(GL_VERTEX_SHADER, vs);
-    unsigned int f = init_shader(GL_FRAGMENT_SHADER, fs);
-    unsigned int p = glCreateProgram();
-    glAttachShader(p, v);
-    glAttachShader(p, f);
-    glLinkProgram(p);
-    glDeleteShader(v);
-    glDeleteShader(f);
-    int ll;
-    glGetProgramiv(p, GL_INFO_LOG_LENGTH, &ll);
-    if (ll) {
-        char *b = malloc(ll);
-        glGetProgramInfoLog(p, ll, NULL, b);
-        fprintf(stderr, "program error:\n%s\n", b);
-        free(b);
-        glDeleteProgram(p);
-        p = 0;
-    }
-    return p;
-}
-
 int init_renderer()
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    shader = init_program(assets_vertex_shader, assets_fragment_shader);
+    shader = init_program(vertex_shader, fragment_shader);
     if (!shader)
         return -1;
     glUseProgram(shader);
@@ -158,10 +107,9 @@ int init_renderer()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, 8 * TILE_COUNT, 8, 0, GL_RED,
                  GL_UNSIGNED_BYTE, NULL);
     for (unsigned char i = 0; i < TILE_COUNT; i++) {
-        unsigned char tile[64];
-        parse_tile_data(tile, assets_tiles[i]);
+        struct tile_data td = decompress_tile_data(&tiles[i]);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 8 * i, 0, 8, 8, GL_RED,
-                        GL_UNSIGNED_BYTE, tile);
+                        GL_UNSIGNED_BYTE, &td);
     }
 
     glActiveTexture(GL_TEXTURE1);
@@ -175,7 +123,7 @@ int init_renderer()
                  GL_UNSIGNED_BYTE, NULL);
     for (unsigned char i = 0; i < PALETTE_COUNT; i++) {
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, i, 3, 1, GL_RGB,
-                        GL_UNSIGNED_BYTE, assets_palettes[i]);
+                        GL_UNSIGNED_BYTE, &palettes[i]);
     }
 
     set_background_color(0, 0, 0);
