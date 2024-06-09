@@ -21,29 +21,20 @@ static struct {
 } buffers;
 
 static struct {
-    unsigned int pixel_size;
-    unsigned int tiles;
-    unsigned int tile_count;
-    unsigned int palettes;
-    unsigned int palette_count;
-} uniforms;
-
-static struct {
     unsigned int tiles;
     unsigned int palettes;
 } textures;
 
-static unsigned int shader;
 static float background_color[3];
 
 int init_renderer()
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    shader = init_program(vertex_shader, fragment_shader);
-    if (!shader)
+
+    if (shader_init())
         return -1;
-    glUseProgram(shader);
+    shader_bind();
 
     glGenVertexArrays(1, &buffers.vao);
     glBindVertexArray(buffers.vao);
@@ -85,17 +76,11 @@ int init_renderer()
     glVertexAttribDivisor(3, 1);
     glEnableVertexAttribArray(3);
 
-    uniforms.pixel_size = glGetUniformLocation(shader, "pixel_size");
-    uniforms.tiles = glGetUniformLocation(shader, "tiles");
-    uniforms.palettes = glGetUniformLocation(shader, "palettes");
-    uniforms.tile_count = glGetUniformLocation(shader, "tile_count");
-    uniforms.palette_count = glGetUniformLocation(shader, "palette_count");
-
-    glUniform2f(uniforms.pixel_size, 2.0f / GAME_WIDTH, 2.0f / GAME_HEIGHT);
-    glUniform1i(uniforms.tiles, 0);
-    glUniform1i(uniforms.palettes, 1);
-    glUniform1f(uniforms.tile_count, (float) TILE_COUNT);
-    glUniform1f(uniforms.palette_count, (float) PALETTE_COUNT);
+    shader_set_palette_count(PALETTE_COUNT);
+    shader_set_tile_count(TILE_COUNT);
+    shader_set_pixel_size(2.0f / GAME_WIDTH, 2.0f / GAME_HEIGHT);
+    shader_set_tiles(0);
+    shader_set_palettes(1);
 
     glActiveTexture(GL_TEXTURE0);
     glGenTextures(1, &textures.tiles);
@@ -139,7 +124,7 @@ void destroy_renderer()
     glDeleteBuffers(1, &buffers.tile);
     glDeleteBuffers(1, &buffers.palette);
     glDeleteVertexArrays(1, &buffers.vao);
-    glDeleteProgram(shader);
+    shader_destroy();
 }
 
 void render_tile(unsigned char tile, short x, short y, unsigned char palette)

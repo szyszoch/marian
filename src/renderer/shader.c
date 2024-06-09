@@ -43,6 +43,16 @@ const char *fragment_shader =
         "}\n"
     "}\n";
 
+static unsigned int program;
+
+static struct {
+    unsigned int pixel_size;
+    unsigned int tiles;
+    unsigned int tile_count;
+    unsigned int palettes;
+    unsigned int palette_count;
+} uniforms;
+
 static unsigned int init_shader(unsigned int t, const char *s)
 {
     unsigned int sh = glCreateShader(t);
@@ -61,7 +71,7 @@ static unsigned int init_shader(unsigned int t, const char *s)
     return sh;
 }
 
-unsigned int init_program(const char *vs, const char *fs)
+static unsigned int init_program(const char *vs, const char *fs)
 {
     unsigned int v = init_shader(GL_VERTEX_SHADER, vs);
     unsigned int f = init_shader(GL_FRAGMENT_SHADER, fs);
@@ -82,4 +92,52 @@ unsigned int init_program(const char *vs, const char *fs)
         p = 0;
     }
     return p;
+}
+
+int shader_init()
+{
+    program = init_program(vertex_shader, fragment_shader);
+    if (!program)
+        return -1;
+    uniforms.tiles = glGetUniformLocation(program, "tiles");
+    uniforms.palettes = glGetUniformLocation(program, "palettes");
+    uniforms.tile_count = glGetUniformLocation(program, "tile_count");
+    uniforms.palette_count = glGetUniformLocation(program, "palette_count");
+    uniforms.pixel_size = glGetUniformLocation(program, "pixel_size");
+    return 0;
+}
+
+void shader_destroy()
+{
+    glDeleteProgram(program);
+}
+
+void shader_bind()
+{
+    glUseProgram(program);
+}
+
+void shader_set_tile_count(int tc)
+{
+    glUniform1f(uniforms.tile_count, (float) tc);
+}
+
+void shader_set_palette_count(int pc)
+{
+    glUniform1f(uniforms.palette_count, (float) pc);
+}
+
+void shader_set_tiles(int t)
+{
+    glUniform1i(uniforms.tiles, t);
+}
+
+void shader_set_palettes(int p)
+{
+    glUniform1i(uniforms.palettes, p);
+}
+
+void shader_set_pixel_size(float w, float h)
+{
+    glUniform2f(uniforms.pixel_size, w, h);
 }
