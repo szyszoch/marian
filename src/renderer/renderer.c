@@ -4,6 +4,7 @@
 #include "settings.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
+#include "renderer/tilemap.h"
 
 static struct {
     float pos[BATCH_SIZE][2];
@@ -20,11 +21,6 @@ static struct {
     unsigned int tile;
 } buffers;
 
-static struct {
-    unsigned int tiles;
-    unsigned int palettes;
-} textures;
-
 static float background_color[3];
 
 int init_renderer()
@@ -35,6 +31,10 @@ int init_renderer()
     if (shader_init())
         return -1;
     shader_bind();
+
+    if (tilemap_init())
+        return -1;
+    tilemap_bind();
 
     glGenVertexArrays(1, &buffers.vao);
     glBindVertexArray(buffers.vao);
@@ -81,49 +81,18 @@ int init_renderer()
     shader_set_pixel_size(2.0f / GAME_WIDTH, 2.0f / GAME_HEIGHT);
     shader_set_tiles(0);
     shader_set_palettes(1);
-
-    glActiveTexture(GL_TEXTURE0);
-    glGenTextures(1, &textures.tiles);
-    glBindTexture(GL_TEXTURE_2D, textures.tiles);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, 8 * TILE_COUNT, 8, 0, GL_RED,
-                 GL_UNSIGNED_BYTE, NULL);
-    for (unsigned char i = 0; i < TILE_COUNT; i++) {
-        struct tile_data td = decompress_tile_data(&tiles[i]);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 8 * i, 0, 8, 8, GL_RED,
-                        GL_UNSIGNED_BYTE, &td);
-    }
-
-    glActiveTexture(GL_TEXTURE1);
-    glGenTextures(1, &textures.palettes);
-    glBindTexture(GL_TEXTURE_2D, textures.palettes);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 3, PALETTE_COUNT, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, NULL);
-    for (unsigned char i = 0; i < PALETTE_COUNT; i++) {
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, i, 3, 1, GL_RGB,
-                        GL_UNSIGNED_BYTE, &palettes[i]);
-    }
-
     set_background_color(0, 0, 0);
     return glGetError();
 }
 
 void destroy_renderer()
 {
-    glDeleteTextures(1, &textures.tiles);
-    glDeleteTextures(1, &textures.palettes);
     glDeleteBuffers(1, &buffers.quad);
     glDeleteBuffers(1, &buffers.pos);
     glDeleteBuffers(1, &buffers.tile);
     glDeleteBuffers(1, &buffers.palette);
     glDeleteVertexArrays(1, &buffers.vao);
+    tilemap_destroy();
     shader_destroy();
 }
 
