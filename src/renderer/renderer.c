@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "settings.h"
 #include "renderer/renderer.h"
-#include "renderer/shader.h"
+#include "renderer/shader/shader.h"
 #include "renderer/tilemap.h"
 
 static struct {
@@ -78,9 +78,9 @@ int init_renderer()
 
     shader_set_palette_count(PALETTE_COUNT);
     shader_set_tile_count(TILE_COUNT);
-    shader_set_pixel_size(2.0f / GAME_WIDTH, 2.0f / GAME_HEIGHT);
-    shader_set_tiles(0);
-    shader_set_palettes(1);
+    shader_set_game_dims(GAME_WIDTH, GAME_HEIGHT);
+    shader_set_tiles_texture(0);
+    shader_set_palettes_texture(1);
     set_background_color(0, 0, 0);
     return glGetError();
 }

@@ -1,5 +1,5 @@
 NAME := marian
-SRCS := $(wildcard src/*.c src/**/*.c) 
+SRCS := $(wildcard src/*.c src/**/*.c src/**/**/*.c) 
 OBJS := $(SRCS:src/%.c=obj/%.o) obj/glad.o
 
 CC := gcc
