@@ -5,21 +5,7 @@
 #include "renderer/renderer.h"
 #include "renderer/shader/shader.h"
 #include "renderer/tilemap/tilemap.h"
-
-static struct {
-    float pos[BATCH_SIZE][2];
-    float tile[BATCH_SIZE];
-    float palette[BATCH_SIZE];
-    unsigned int count;
-} render_list;
-
-static struct {
-    unsigned int vao;
-    unsigned int quad;
-    unsigned int pos;
-    unsigned int palette;
-    unsigned int tile;
-} buffers;
+#include "renderer/buffer/buffer.h"
 
 static float background_color[3];
 
@@ -31,102 +17,40 @@ int init_renderer()
     if (shader_init())
         return -1;
     shader_bind();
+    shader_set_palette_count(PALETTE_COUNT);
+    shader_set_tile_count(TILE_COUNT);
+    shader_set_game_dims(GAME_WIDTH, GAME_HEIGHT);
+    shader_set_tiles_texture(0);
+    shader_set_palettes_texture(1);
 
     if (tilemap_init())
         return -1;
     tilemap_bind_tiles(0);
     tilemap_bind_palettes(1);
 
-    glGenVertexArrays(1, &buffers.vao);
-    glBindVertexArray(buffers.vao);
+    if (buffer_init(BATCH_SIZE))
+        return -1;
+    buffer_bind();
 
-    const float quad[] = {
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-    };
-    glGenBuffers(1, &buffers.quad);
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.quad);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quad) * BATCH_SIZE, quad,
-                 GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, 0, 0, NULL);
-    glEnableVertexAttribArray(0);
-
-    glGenBuffers(1, &buffers.pos);
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.pos);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * BATCH_SIZE, 
-                 NULL, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(1, 2, GL_FLOAT, 0, 0, NULL);
-    glVertexAttribDivisor(1, 1);
-    glEnableVertexAttribArray(1);
-
-    glGenBuffers(1, &buffers.tile);
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.tile);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * BATCH_SIZE, NULL,
-                 GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(2, 1, GL_FLOAT, 0, 0, NULL);
-    glVertexAttribDivisor(2, 1);
-    glEnableVertexAttribArray(2);
-
-    glGenBuffers(1, &buffers.palette);
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.palette);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * BATCH_SIZE, NULL,
-                 GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(3, 1, GL_FLOAT, 0, 0, NULL);
-    glVertexAttribDivisor(3, 1);
-    glEnableVertexAttribArray(3);
-
-    shader_set_palette_count(PALETTE_COUNT);
-    shader_set_tile_count(TILE_COUNT);
-    shader_set_game_dims(GAME_WIDTH, GAME_HEIGHT);
-    shader_set_tiles_texture(0);
-    shader_set_palettes_texture(1);
     set_background_color(0, 0, 0);
     return glGetError();
 }
 
 void destroy_renderer()
 {
-    glDeleteBuffers(1, &buffers.quad);
-    glDeleteBuffers(1, &buffers.pos);
-    glDeleteBuffers(1, &buffers.tile);
-    glDeleteBuffers(1, &buffers.palette);
-    glDeleteVertexArrays(1, &buffers.vao);
+    buffer_destroy();
     tilemap_destroy();
     shader_destroy();
 }
 
 void render_tile(unsigned char tile, short x, short y, unsigned char palette)
 {
-    if (render_list.count >= BATCH_SIZE) {
-        present_renderer();
-    }
-    else {
-        render_list.pos[render_list.count][0] = (float) x;
-        render_list.pos[render_list.count][1] = (float) y;
-        render_list.tile[render_list.count] = (float) tile;
-        render_list.palette[render_list.count] = (float) palette;
-        render_list.count++;
-    }
+    buffer_add((float) x, (float) y, (float) tile, (float) palette);
 }
 
 void present_renderer()
 {
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.pos);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 2 *
-                    render_list.count, render_list.pos);
-
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.tile);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) *
-                    render_list.count, render_list.tile);
-
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.palette);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 
-                    render_list.count, render_list.palette);
-
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, render_list.count);
-    render_list.count = 0;
+    buffer_send_to_shader();
 }
 
 void clear_renderer()
