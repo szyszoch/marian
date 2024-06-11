@@ -1,11 +1,13 @@
 #include <glad/glad.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "renderer/tiles.h"
-#include "renderer/palettes.h"
+#include "renderer/tilemap/tiles.h"
+#include "renderer/tilemap/palettes.h"
 
-static unsigned int tex_tiles;
-static unsigned int tex_palettes;
+#define TEX_TIL 0x00
+#define TEX_PAL 0x01
+
+static unsigned int texture[2];
 
 static unsigned int get_base_format(unsigned int f)
 {
@@ -36,14 +38,15 @@ static unsigned int init_texture(unsigned int f, unsigned int t, int w, int h,
 
 int tilemap_init()
 {
-    tex_tiles = init_texture(GL_R8, GL_UNSIGNED_BYTE, 8 * TILE_COUNT, 8, NULL);
+    texture[TEX_TIL] = init_texture(GL_R8, GL_UNSIGNED_BYTE, 8 * TILE_COUNT, 8,
+                                 NULL);
     for (unsigned char i = 0; i < TILE_COUNT; i++) {
         struct tile_data td = decompress_tile_data(&tiles[i]);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 8 * i, 0, 8, 8, GL_RED,
                         GL_UNSIGNED_BYTE, &td);
     }
-    tex_palettes = init_texture(GL_RGB8, GL_UNSIGNED_BYTE, 3, PALETTE_COUNT, 
-                                NULL);
+    texture[TEX_PAL] = init_texture(GL_RGB8, GL_UNSIGNED_BYTE, 3, 
+                                    PALETTE_COUNT, NULL);
     for (unsigned char i = 0; i < PALETTE_COUNT; i++) {
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, i, 3, 1, GL_RGB,
                         GL_UNSIGNED_BYTE, &palettes[i]);
@@ -53,14 +56,17 @@ int tilemap_init()
 
 void tilemap_destroy()
 {
-    glDeleteTextures(1, &tex_tiles);
-    glDeleteTextures(1, &tex_palettes);
+    glDeleteTextures(2, texture);
 }
 
-void tilemap_bind()
+void tilemap_bind_tiles(int tex_slot)
 {
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, tex_tiles);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, tex_palettes);
+    glActiveTexture(GL_TEXTURE0 + tex_slot);
+    glBindTexture(GL_TEXTURE_2D, texture[TEX_TIL]);
+}
+
+void tilemap_bind_palettes(int tex_slot)
+{
+    glActiveTexture(GL_TEXTURE0 + tex_slot);
+    glBindTexture(GL_TEXTURE_2D, texture[TEX_PAL]);
 }

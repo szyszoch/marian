@@ -1,8 +1,8 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "renderer/tiles.h"
-#include "renderer/palettes.h"
+#include "renderer/tilemap/tiles.h"
+#include "renderer/tilemap/palettes.h"
 
 #define FLIP_NONE 0x00
 #define FLIP_RIGHT 0x01

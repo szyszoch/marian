@@ -1,4 +1,4 @@
-#include "renderer/tiles.h"
+#include "renderer/tilemap/tiles.h"
 
 /**
  * Every tile in the program is an 8x8 texture with only 4 colours.

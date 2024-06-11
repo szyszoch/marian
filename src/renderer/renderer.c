@@ -4,7 +4,7 @@
 #include "settings.h"
 #include "renderer/renderer.h"
 #include "renderer/shader/shader.h"
-#include "renderer/tilemap.h"
+#include "renderer/tilemap/tilemap.h"
 
 static struct {
     float pos[BATCH_SIZE][2];
@@ -34,7 +34,8 @@ int init_renderer()
 
     if (tilemap_init())
         return -1;
-    tilemap_bind();
+    tilemap_bind_tiles(0);
+    tilemap_bind_palettes(1);
 
     glGenVertexArrays(1, &buffers.vao);
     glBindVertexArray(buffers.vao);
