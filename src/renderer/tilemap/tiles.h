@@ -53,16 +53,10 @@
 #define TILE_COIN_ICON 0x31
 #define TILE_COUNT 0x32
 
-struct compressed_tile_data {
-    unsigned int byte[4];
-};
-
 struct tile_data {
     unsigned char index[64];
 };
 
-extern const struct compressed_tile_data tiles[];
-
-struct tile_data decompress_tile_data(const struct compressed_tile_data *ctd);
+struct tile_data get_tile_data(unsigned char t);
 
 #endif

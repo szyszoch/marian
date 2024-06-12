@@ -41,7 +41,7 @@ int tilemap_init()
     texture[TEX_TIL] = init_texture(GL_R8, GL_UNSIGNED_BYTE, 8 * TILE_COUNT, 8,
                                  NULL);
     for (unsigned char i = 0; i < TILE_COUNT; i++) {
-        struct tile_data td = decompress_tile_data(&tiles[i]);
+        struct tile_data td = get_tile_data(i);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 8 * i, 0, 8, 8, GL_RED,
                         GL_UNSIGNED_BYTE, &td);
     }
