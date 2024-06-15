@@ -1,0 +1,12 @@
+#ifndef BIOME_H
+#define BIOME_H
+
+#define BIOME_OVERWORLD 0x00
+#define BIOME_UNDERGROUND 0x01
+#define BIOME_CASTLE 0x02
+#define BIOME_UNDERWATER 0x03
+#define BIOME_MUSHROOM 0x04
+#define BIOME_SNOW 0x05
+#define BIOME_COUNT 0x06
+
+#endif

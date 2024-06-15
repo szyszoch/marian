@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "renderer/renderer.h"
 #include "renderer/data/palettes.h"
+#include "renderer/data/palette_set.h"
 #include "renderer/data/tiles.h"
 #include "settings.h"
 
@@ -40,8 +41,6 @@ static const unsigned char digits_tiles[10] = {
     TILE_5, TILE_6, TILE_7, TILE_8, TILE_9,
 };
 
-static float background_color[3];
-
 static struct {
     unsigned int vao;
     unsigned int vbo[4];
@@ -56,6 +55,8 @@ static struct {
 
 static unsigned int program; 
 static unsigned int texture[2];
+static float background_color[3];
+static unsigned int biome;
 
 static unsigned int get_texture_base_format(unsigned int f)
 {
@@ -210,7 +211,7 @@ static int init_tilemap()
 }
 
 static void render_tile(unsigned char tile, short x, short y,
-    unsigned char palette)
+    unsigned char palette_set)
 {
     if (buffer.data.count >= buffer.data.max) {
         renderer_present();
@@ -219,7 +220,7 @@ static void render_tile(unsigned char tile, short x, short y,
     buffer.data.pos[buffer.data.count * 2] = x;
     buffer.data.pos[buffer.data.count * 2 + 1] = y;
     buffer.data.tile[buffer.data.count] = tile;
-    buffer.data.palette[buffer.data.count] = palette;
+    buffer.data.palette[buffer.data.count] = palette_sets[palette_set][biome];
     buffer.data.count++;
 }
 
@@ -228,7 +229,7 @@ static void render_number_zero_padding(unsigned int number,
 {
     while(size--) {
         render_tile(digits_tiles[number % 10], x + size * 8, y,
-            PALETTE_CASTLE_GROUND_AND_STONE);
+            PALETTE_SET_TEXT);
         number /= 10;
     } 
 }
@@ -237,7 +238,7 @@ static void render_number(unsigned int number, short end_x, short y)
 {
     do {
         render_tile(digits_tiles[number % 10], end_x, y,
-                    PALETTE_CASTLE_GROUND_AND_STONE);
+            PALETTE_SET_TEXT);
         end_x -= 8;
     } while (number /= 10);
 }
@@ -284,7 +285,7 @@ static void render_text(const char *text, short x, short y)
     int i = 0;
     while (text[i]) {
         unsigned char tile = letter_to_tile(text[i]);
-        render_tile(tile, x + 8 * i, y, PALETTE_CASTLE_GROUND_AND_STONE);
+        render_tile(tile, x + 8 * i, y, PALETTE_SET_TEXT);
         i++;
     }
 }
@@ -317,7 +318,8 @@ int renderer_init()
         fprintf(stderr, "Failed to initialize renderer buffers\n");
         return -1;
     }
-        
+    
+    renderer_set_biome(BIOME_OVERWORLD);
     renderer_set_background_color(0, 0, 0);
     return glGetError();
 }
@@ -355,6 +357,11 @@ void renderer_clear()
                  1.0f);
 }
 
+void renderer_set_biome(unsigned char b)
+{
+    biome = b;
+}
+
 void renderer_set_background_color(unsigned char r, unsigned char g,
     unsigned char b)
 {
@@ -367,12 +374,12 @@ void renderer_1_player_hud()
 {
     render_text("MARIO", 24, 16);
     render_number_zero_padding(score, 6, 24, 24);
-    render_tile(TILE_COIN_ICON, 88, 24, PALETTE_OVERWORLD_COINS_1);
-    render_tile(TILE_SMALL_X, 96, 24, PALETTE_CASTLE_GROUND_AND_STONE);
+    render_tile(TILE_COIN_ICON, 88, 24, PALETTE_SET_COINS_1);
+    render_tile(TILE_SMALL_X, 96, 24, PALETTE_SET_TEXT);
     render_number_zero_padding(coins, 2, 104, 24);
     render_text("WORLD", 144, 16);
     render_number_zero_padding(world, 1, 152, 24);
-    render_tile(TILE_MINUS, 160, 24, PALETTE_CASTLE_GROUND_AND_STONE);
+    render_tile(TILE_MINUS, 160, 24, PALETTE_SET_TEXT);
     render_number_zero_padding(level, 1, 168, 24);
     render_text("TIME", 200, 16);
     render_number(time, 224, 24);
@@ -382,14 +389,11 @@ void renderer_texture(unsigned char t, short x, short y)
 {
     switch(t) {
         case TEXTURE_GROUND: {
-            render_tile(TILE_GROUND_1, x, y, 
-                PALETTE_OVERWORLD_GROUND_AND_STONE);
-            render_tile(TILE_GROUND_2, x + 8, y, 
-                PALETTE_OVERWORLD_GROUND_AND_STONE);
-            render_tile(TILE_GROUND_3, x, y + 8, 
-                PALETTE_OVERWORLD_GROUND_AND_STONE);
+            render_tile(TILE_GROUND_1, x, y, PALETTE_SET_GROUND_AND_STONE);
+            render_tile(TILE_GROUND_2, x + 8, y, PALETTE_SET_GROUND_AND_STONE);
+            render_tile(TILE_GROUND_3, x, y + 8, PALETTE_SET_GROUND_AND_STONE);
             render_tile(TILE_GROUND_4, x + 8, y + 8, 
-                PALETTE_OVERWORLD_GROUND_AND_STONE);
+                PALETTE_SET_GROUND_AND_STONE);
             break;
         }
     }
