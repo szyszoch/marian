@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-int window_init();
+int window_init(const char *t, int w, int h);
 void window_destroy();
 void window_update();
 int window_is_open();

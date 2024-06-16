@@ -5,7 +5,6 @@
 #include "renderer/data/palettes.h"
 #include "renderer/data/palette_set.h"
 #include "renderer/data/tiles.h"
-#include "settings.h"
 
 #define GAME_WIDTH 256
 #define GAME_HEIGHT 240
@@ -214,7 +213,7 @@ static void render_tile(unsigned char tile, short x, short y,
     unsigned char palette_set)
 {
     if (buffer.data.count >= buffer.data.max) {
-        renderer_present();
+        fprintf(stderr, "The limit of instances has been exceeded\n");
         return;
     } 
     buffer.data.pos[buffer.data.count * 2] = x;

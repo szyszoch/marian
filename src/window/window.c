@@ -1,7 +1,6 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 #include "window.h"
-#include "settings.h"
 
 static GLFWwindow *window = NULL;
 
@@ -11,15 +10,14 @@ static void resize_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-int window_init()
+int window_init(const char *t, int w, int h)
 {
     if (!glfwInit())
         return -1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE,
-                              NULL, NULL);
+    window = glfwCreateWindow(w, h, t, NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -29,7 +27,7 @@ int window_init()
         glfwTerminate();
         return -1;
     }
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    glViewport(0, 0, w, h);
     glfwSetWindowSizeCallback(window, resize_callback);
     glfwSwapInterval(1);
     return 0;
