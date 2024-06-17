@@ -8,23 +8,17 @@
 
 #define GAME_WIDTH 256
 #define GAME_HEIGHT 240
-
 #define BATCH_SIZE 256
 
-#define VBO_QUAD    0x00
-#define VBO_POS     0x01
-#define VBO_TILE    0x02
-#define VBO_PALETTE 0x03
-#define VBO_COUNT   0x04
+#define FLIP_NONE       0x00
+#define FLIP_RIGHT      0x01
+#define FLIP_HORIZONTAL 0x02
+#define FLIP_VERTICAL   0x04
 
-#define VBO_QUAD_SIZE       (sizeof(float) * 8)
-#define VBO_POS_SIZE        (sizeof(float) * 2)
-#define VBO_TILE_SIZE       (sizeof(float))
-#define VBO_PALETTE_SIZE    (sizeof(float))
-
-#define TEX_TILES       0x00
-#define TEX_PALETTES    0x01
-#define TEX_COUNT       0x02
+struct vec2 {
+    float x;
+    float y;
+};
 
 extern const char *vertex_shader;
 extern const char *fragment_shader;
@@ -35,58 +29,70 @@ extern unsigned char level;
 extern unsigned char world;
 extern unsigned int score;
 
-static const unsigned char digits_tiles[10] = {
-    TILE_0, TILE_1, TILE_2, TILE_3, TILE_4,
-    TILE_5, TILE_6, TILE_7, TILE_8, TILE_9,
-};
-
-static struct {
-    unsigned int vao;
-    unsigned int vbo[4];
-    struct {
-        float *pos;
-        float *tile;
-        float *palette;
-        unsigned int count;
-        unsigned int max;
-    } data;
-} buffer;
-
 static unsigned int program; 
-static unsigned int texture[2];
-static float background_color[3];
-static unsigned int biome;
 
-static unsigned int get_texture_base_format(unsigned int f)
-{
-    switch(f) {
-        case GL_R8: return GL_RED;
-        case GL_RGB8: return GL_RGB;
-        default: {
-            fprintf(stderr, "Unknown texture format\n");
-            return 0;
-        }
-    }
-}
+static unsigned int tiles_atlas;
+static unsigned int palettes_atlas;
 
-static unsigned int init_texture(unsigned int f, int w, int h, const void *d)
+static unsigned int u_tiles;
+static unsigned int u_palettes;
+static unsigned int u_tile_count;
+static unsigned int u_palette_count;
+static unsigned int u_pixel_size;
+
+static unsigned int vao;
+static unsigned int b_quad;
+static unsigned int b_pos;
+static unsigned int b_tile;
+static unsigned int b_palette;
+static unsigned int b_flip;
+
+static struct vec2 bd_pos[BATCH_SIZE];
+static unsigned int bd_tile[BATCH_SIZE];
+static unsigned int bd_palette[BATCH_SIZE];
+static unsigned int bd_flip[BATCH_SIZE];
+static unsigned int bd_count;
+
+static unsigned char biome;
+
+static float bg_color[3];
+
+static void set_default_2d_texture_parameters()
 {
-    unsigned int tx;
-    glGenTextures(1, &tx);
-    glBindTexture(GL_TEXTURE_2D, tx);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    unsigned int bf = get_texture_base_format(f);
-    glTexImage2D(GL_TEXTURE_2D, 0, f, w, h, 0, bf, GL_UNSIGNED_BYTE, d);
-    return tx;
-} 
+}
 
-static void change_texture(int x, int y, int w, int h, unsigned int f,
-    const void *d)
+static int init_tiles_atlas()
 {
-    glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, f, GL_UNSIGNED_BYTE, d);
+    glActiveTexture(GL_TEXTURE0);
+    glGenTextures(1, &tiles_atlas);
+    glBindTexture(GL_TEXTURE_2D, tiles_atlas);
+    set_default_2d_texture_parameters();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TILE_COUNT * 8, 8, 0, GL_RED,    
+        GL_UNSIGNED_BYTE, NULL);
+    for (unsigned char i = 0; i < TILE_COUNT; i++) {
+        struct tile_data td = get_tile_data(i);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 8 * i, 0, 8, 8, GL_RED, 
+            GL_UNSIGNED_BYTE, &td);
+    }
+    return glGetError();
+}
+
+static int init_palettes_atlas()
+{
+    glActiveTexture(GL_TEXTURE1);
+    glGenTextures(1, &tiles_atlas);
+    glBindTexture(GL_TEXTURE_2D, tiles_atlas);
+    set_default_2d_texture_parameters();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 3, PALETTE_COUNT, 0, GL_RGB, 
+        GL_UNSIGNED_BYTE, NULL);
+    for (unsigned char i = 0; i < PALETTE_COUNT; i++)
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, i, 3, 1, GL_RGB, GL_UNSIGNED_BYTE, 
+            &palettes[i]);
+    return glGetError();
 }
 
 static unsigned int init_shader(unsigned int t, const char *s)
@@ -130,119 +136,120 @@ static unsigned int init_program(const char *vs, const char *fs)
     return p;
 }
 
-static int init_buffers(unsigned int n)
+static int init_uniforms()
 {
-    glGenVertexArrays(1, &buffer.vao);
-    glBindVertexArray(buffer.vao);
+    u_tiles = glGetUniformLocation(program, "tiles");
+    u_palettes = glGetUniformLocation(program, "palettes");
+    u_tile_count = glGetUniformLocation(program, "tile_count");
+    u_palette_count = glGetUniformLocation(program, "palette_count");
+    u_pixel_size = glGetUniformLocation(program, "pixel_size");
 
-    glGenBuffers(VBO_COUNT, buffer.vbo);
+    glUniform1i(u_tiles, 0);
+    glUniform1i(u_palettes, 1);
+    glUniform1f(u_tile_count, TILE_COUNT);
+    glUniform1f(u_palette_count, PALETTE_COUNT);
+    glUniform2f(u_pixel_size, 2.0f / GAME_WIDTH, 2.0f / GAME_HEIGHT);
 
+    return glGetError();
+}
+
+static int init_buffers()
+{
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    glGenBuffers(1, &b_quad);
     const float quad[] = {
         0.0f, 0.0f,
         1.0f, 0.0f,
         0.0f, 1.0f,
         1.0f, 1.0f,
     };
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo[VBO_QUAD]);
-    glBufferData(GL_ARRAY_BUFFER, VBO_QUAD_SIZE, quad, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, b_quad);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, 0, 0, NULL);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo[VBO_POS]);
-    glBufferData(GL_ARRAY_BUFFER, VBO_POS_SIZE * n, NULL, GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &b_pos);
+    glBindBuffer(GL_ARRAY_BUFFER, b_pos);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(struct vec2) * BATCH_SIZE, NULL,
+        GL_DYNAMIC_DRAW);
     glVertexAttribPointer(1, 2, GL_FLOAT, 0, 0, NULL);
     glVertexAttribDivisor(1, 1);
     glEnableVertexAttribArray(1);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo[VBO_TILE]);
-    glBufferData(GL_ARRAY_BUFFER, VBO_TILE_SIZE * n, NULL, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(2, 1, GL_FLOAT, 0, 0, NULL);
+    glGenBuffers(1, &b_tile);
+    glBindBuffer(GL_ARRAY_BUFFER, b_tile);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(int) * BATCH_SIZE, NULL,
+        GL_DYNAMIC_DRAW);
+    glVertexAttribIPointer(2, 1, GL_INT, 0, NULL);
     glVertexAttribDivisor(2, 1);
     glEnableVertexAttribArray(2);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo[VBO_PALETTE]);
-    glBufferData(GL_ARRAY_BUFFER, VBO_PALETTE_SIZE * n, NULL, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(3, 1, GL_FLOAT, 0, 0, NULL);
+    glGenBuffers(1, &b_palette);
+    glBindBuffer(GL_ARRAY_BUFFER, b_palette);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(int) * BATCH_SIZE, NULL,
+        GL_DYNAMIC_DRAW);
+    glVertexAttribIPointer(3, 1, GL_INT, 0, NULL);
     glVertexAttribDivisor(3, 1);
     glEnableVertexAttribArray(3);
 
-    buffer.data.pos = malloc(VBO_POS_SIZE * n);
-    buffer.data.tile = malloc(VBO_TILE_SIZE * n);
-    buffer.data.palette = malloc(VBO_PALETTE_SIZE * n);
-    buffer.data.count = 0;
-    buffer.data.max = n;
+    glGenBuffers(1, &b_flip);
+    glBindBuffer(GL_ARRAY_BUFFER, b_flip);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(int) * BATCH_SIZE, NULL,
+        GL_DYNAMIC_DRAW);
+    glVertexAttribIPointer(4, 1, GL_INT, 0, NULL);
+    glVertexAttribDivisor(4, 1);
+    glEnableVertexAttribArray(4);
 
     return glGetError();
 }
 
-static int init_uniforms()
+static void render(unsigned char t, unsigned char ps, short x, short y,
+    unsigned char f)
 {
-    unsigned int tiles = glGetUniformLocation(program, "tiles");
-    unsigned int palettes = glGetUniformLocation(program, "palettes");
-    unsigned int tile_count = glGetUniformLocation(program, "tile_count");
-    unsigned int palette_count = glGetUniformLocation(program, "palette_count");
-    unsigned int pixel_size = glGetUniformLocation(program, "pixel_size");
-
-    glUniform1i(tiles, 0);
-    glUniform1i(palettes, 1);
-    glUniform1f(tile_count, TILE_COUNT);
-    glUniform1f(palette_count, PALETTE_COUNT);
-    glUniform2f(pixel_size, 2.0f / GAME_WIDTH, 2.0f / GAME_HEIGHT);
-
-    return glGetError();
-}
-
-static int init_tilemap()
-{
-    glActiveTexture(GL_TEXTURE0);
-    texture[TEX_TILES] = init_texture(GL_R8, 8 * TILE_COUNT, 8, NULL);
-    for (unsigned char i = 0; i < TILE_COUNT; i++) {
-        struct tile_data td = get_tile_data(i);
-        change_texture(8 * i, 0, 8, 8, GL_RED, &td);
-    }
-
-    glActiveTexture(GL_TEXTURE1);
-    texture[TEX_PALETTES] = init_texture(GL_RGB8, 3, PALETTE_COUNT, NULL);
-    for (unsigned char i = 0; i < PALETTE_COUNT; i++)
-        change_texture(0, i, 3, 1, GL_RGB, &palettes[i]);
-
-    return glGetError();
-}
-
-static void render_tile(unsigned char tile, short x, short y,
-    unsigned char palette_set)
-{
-    if (buffer.data.count >= buffer.data.max) {
+    if (bd_count >= BATCH_SIZE) {
         fprintf(stderr, "The limit of instances has been exceeded\n");
         return;
     } 
-    buffer.data.pos[buffer.data.count * 2] = x;
-    buffer.data.pos[buffer.data.count * 2 + 1] = y;
-    buffer.data.tile[buffer.data.count] = tile;
-    buffer.data.palette[buffer.data.count] = palette_sets[palette_set][biome];
-    buffer.data.count++;
+    bd_pos[bd_count].x = x;
+    bd_pos[bd_count].y = y;
+    bd_tile[bd_count] = t;
+    bd_palette[bd_count] = palette_sets[ps][biome];
+    bd_flip[bd_count] = f;
+    bd_count++;
+}
+
+static unsigned char convert_digit_to_tile(unsigned int d)
+{
+    const unsigned char dt[10] = {
+        TILE_0, TILE_1, TILE_2, TILE_3, TILE_4,
+        TILE_5, TILE_6, TILE_7, TILE_8, TILE_9,
+    };
+    return dt[d % 10];
 }
 
 static void render_number_zero_padding(unsigned int number,
     unsigned char size, short x, short y)
 {
     while(size--) {
-        render_tile(digits_tiles[number % 10], x + size * 8, y,
-            PALETTE_SET_TEXT);
+        unsigned char d = convert_digit_to_tile(number);
+        render(d, PALETTE_SET_TEXT, x + size * 8, y, 0);
         number /= 10;
-    } 
+    };
 }
 
 static void render_number(unsigned int number, short end_x, short y)
 {
-    do {
-        render_tile(digits_tiles[number % 10], end_x, y,
-            PALETTE_SET_TEXT);
+    while (number) {
         end_x -= 8;
-    } while (number /= 10);
+        unsigned char d = convert_digit_to_tile(number);
+        render(d, PALETTE_SET_TEXT, end_x, y, 0);
+        number /= 10;
+    };
 }
 
-static unsigned char letter_to_tile(char letter)
+static unsigned char convert_letter_to_tile(char letter)
 {
     switch(letter) {
         case 'A': return TILE_A;
@@ -283,8 +290,8 @@ static void render_text(const char *text, short x, short y)
 {
     int i = 0;
     while (text[i]) {
-        unsigned char tile = letter_to_tile(text[i]);
-        render_tile(tile, x + 8 * i, y, PALETTE_SET_TEXT);
+        unsigned char tile = convert_letter_to_tile(text[i]);
+        render(tile, PALETTE_SET_TEXT, x + 8 * i, y, 0);
         i++;
     }
 }
@@ -308,16 +315,21 @@ int renderer_init()
         return -1;  
     }
 
-    if (init_tilemap()) {
-        fprintf(stderr, "Failed to initialize tilemap\n");
-        return -1;    
-    }
-
-    if (init_buffers(BATCH_SIZE)) {
-        fprintf(stderr, "Failed to initialize renderer buffers\n");
+    if (init_tiles_atlas()) {
+        fprintf(stderr, "Failed to initialize tiles atlas\n");
         return -1;
     }
-    
+
+    if (init_palettes_atlas()) {
+        fprintf(stderr, "Failed to initialize palettes atlas\n");
+        return -1;
+    }
+
+    if (init_buffers()) {
+        fprintf(stderr, "Failed to initialize buffers\n");
+        return -1;
+    }
+
     renderer_set_biome(BIOME_OVERWORLD);
     renderer_set_background_color(0, 0, 0);
     return glGetError();
@@ -325,35 +337,39 @@ int renderer_init()
 
 void renderer_destroy()
 {
-    glDeleteBuffers(VBO_COUNT, buffer.vbo);
-    glDeleteVertexArrays(1, &buffer.vao);
-    glDeleteTextures(TEX_COUNT, texture);
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &b_quad);
+    glDeleteBuffers(1, &b_pos);
+    glDeleteBuffers(1, &b_tile);
+    glDeleteBuffers(1, &b_palette);
+    glDeleteBuffers(1, &b_flip);
+    glDeleteTextures(1, &tiles_atlas);
+    glDeleteTextures(1, &palettes_atlas);
     glDeleteProgram(program);
 }
 
 void renderer_present()
 {
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo[VBO_POS]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, VBO_POS_SIZE * buffer.data.count,
-        buffer.data.pos);
+    glBindBuffer(GL_ARRAY_BUFFER, b_pos);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(struct vec2) * bd_count, bd_pos);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo[VBO_TILE]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, VBO_TILE_SIZE * buffer.data.count,
-        buffer.data.tile);
+    glBindBuffer(GL_ARRAY_BUFFER, b_tile);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * bd_count, bd_tile);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo[VBO_PALETTE]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, VBO_PALETTE_SIZE * buffer.data.count,
-        buffer.data.palette);
+    glBindBuffer(GL_ARRAY_BUFFER, b_palette);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * bd_count, bd_palette);
 
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, buffer.data.count);
-    buffer.data.count = 0;
+    glBindBuffer(GL_ARRAY_BUFFER, b_flip);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * bd_count, bd_flip);
+
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, bd_count);
+    bd_count = 0;
 }
 
 void renderer_clear()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(background_color[0], background_color[1], background_color[2],
-                 1.0f);
+    glClearColor(bg_color[0], bg_color[1], bg_color[2], 1.0f);
 }
 
 void renderer_set_biome(unsigned char b)
@@ -364,36 +380,36 @@ void renderer_set_biome(unsigned char b)
 void renderer_set_background_color(unsigned char r, unsigned char g,
     unsigned char b)
 {
-    background_color[0] = (float) r / 0xff;
-    background_color[1] = (float) g / 0xff;
-    background_color[2] = (float) b / 0xff;
-}
-
-void renderer_1_player_hud()
-{
-    render_text("MARIO", 24, 16);
-    render_number_zero_padding(score, 6, 24, 24);
-    render_tile(TILE_COIN_ICON, 88, 24, PALETTE_SET_COINS_1);
-    render_tile(TILE_SMALL_X, 96, 24, PALETTE_SET_TEXT);
-    render_number_zero_padding(coins, 2, 104, 24);
-    render_text("WORLD", 144, 16);
-    render_number_zero_padding(world, 1, 152, 24);
-    render_tile(TILE_MINUS, 160, 24, PALETTE_SET_TEXT);
-    render_number_zero_padding(level, 1, 168, 24);
-    render_text("TIME", 200, 16);
-    render_number(time, 224, 24);
+    bg_color[0] = (float) r / 0xff;
+    bg_color[1] = (float) g / 0xff;
+    bg_color[2] = (float) b / 0xff;
 }
 
 void renderer_texture(unsigned char t, short x, short y)
 {
     switch(t) {
         case TEXTURE_GROUND: {
-            render_tile(TILE_GROUND_1, x, y, PALETTE_SET_GROUND_AND_STONE);
-            render_tile(TILE_GROUND_2, x + 8, y, PALETTE_SET_GROUND_AND_STONE);
-            render_tile(TILE_GROUND_3, x, y + 8, PALETTE_SET_GROUND_AND_STONE);
-            render_tile(TILE_GROUND_4, x + 8, y + 8, 
-                PALETTE_SET_GROUND_AND_STONE);
+            render(TILE_K, PALETTE_SET_GROUND_AND_STONE, x, y, 0);
+            render(TILE_GROUND_2, PALETTE_SET_GROUND_AND_STONE, x + 8, y, 0);
+            render(TILE_GROUND_3, PALETTE_SET_GROUND_AND_STONE, x, y + 8, 0);
+            render(TILE_GROUND_4, PALETTE_SET_GROUND_AND_STONE, x + 8, y + 8,  
+                0);
             break;
         }
     }
+}
+
+void renderer_1_player_hud()
+{
+    render_text("MARIO", 24, 16);
+    render_number_zero_padding(score, 6, 24, 24);
+    render(TILE_COIN_ICON, PALETTE_SET_COINS_1, 88, 24, 0);
+    render(TILE_SMALL_X, PALETTE_SET_TEXT, 96, 24, 0);
+    render_number_zero_padding(coins, 2, 104, 24);
+    render_text("WORLD", 144, 16);
+    render_number_zero_padding(world, 1, 152, 24);
+    render(TILE_MINUS, PALETTE_SET_TEXT, 160, 24, 0);
+    render_number_zero_padding(level, 1, 168, 24);
+    render_text("TIME", 200, 16);
+    render_number(time, 232, 24);
 }

@@ -4,7 +4,7 @@ const char *fragment_shader =
     "uniform sampler2D palettes;\n"
     "uniform float palette_count;\n"
     "in vec2 ui;\n"
-    "in float fpalette;\n"
+    "flat in int fpalette;\n"
     "out vec4 color;\n"
     "void main()\n"
     "{\n"
