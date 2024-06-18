@@ -1,6 +1,11 @@
 #ifndef TILES_H
 #define TILES_H
 
+#define FLIP_NONE       0x00
+#define FLIP_RIGHT      0x01
+#define FLIP_HORIZONTAL 0x02
+#define FLIP_VERTICAL   0x04
+
 #define TILE_NONE 0x00
 #define TILE_FIRST_COLOR 0x01
 #define TILE_SECOND_COLOR 0x02
@@ -65,14 +70,234 @@
 #define TILE_LOGO_RIGHT_EDGE 0x35
 #define TILE_LOGO_RIGHT_BOTTOM_CORNER 0x36
 
-#define TILE_BIG_S_LEFT_TOP_CORNER 0x37
-#define TILE_BIG_S_RIGHT_TOP_CORNER 0x37
-#define TILE_BIG_S_LEFT_BOTTOM_CORNER 0x37
-#define TILE_BIG_S_RIGHT_BOTTOM_CORNER 0x37
-#define TILE_BIG_S_MIDDLE_LEFT 0x38
-#define TILE_BIG_S_MIDDLE_RIGHT 0x39
+#define TILE_BIG_S_1 0x37
+#define TILE_BIG_S_2 0x37
+#define TILE_BIG_S_3 0x38
+#define TILE_BIG_S_4 0x39
+#define TILE_BIG_S_5 0x37
+#define TILE_BIG_S_6 0x37
 
-#define TILE_COUNT 0x3a
+#define TILE_BIG_S_SHADOW_1 0x3a
+#define TILE_BIG_S_SHADOW_2 0x3a
+#define TILE_BIG_S_SHADOW_3 0x3b
+#define TILE_BIG_S_SHADOW_4 0x3c
+#define TILE_BIG_S_SHADOW_5 0x3a
+#define TILE_BIG_S_SHADOW_6 0x3a
+
+#define TILE_BIG_U_1 0x3d
+#define TILE_BIG_U_2 0x3d
+#define TILE_BIG_U_3 0x3d
+#define TILE_BIG_U_4 0x3d
+#define TILE_BIG_U_5 0x37
+#define TILE_BIG_U_6 0x37
+
+#define TILE_BIG_U_SHADOW_1 0x3e
+#define TILE_BIG_U_SHADOW_2 0x3e
+#define TILE_BIG_U_SHADOW_3 0x3e
+#define TILE_BIG_U_SHADOW_4 0x3e
+#define TILE_BIG_U_SHADOW_5 0x3a
+#define TILE_BIG_U_SHADOW_6 0x3a
+
+#define TILE_BIG_P_1 0x3f
+#define TILE_BIG_P_2 0x37
+#define TILE_BIG_P_3 0x3d
+#define TILE_BIG_P_4 0x37
+#define TILE_BIG_P_5 0x3d
+#define TILE_BIG_P_6 0x00
+
+#define TILE_BIG_P_SHADOW_1 0x40
+#define TILE_BIG_P_SHADOW_2 0x3a
+#define TILE_BIG_P_SHADOW_3 0x3e
+#define TILE_BIG_P_SHADOW_4 0x3a
+#define TILE_BIG_P_SHADOW_5 0x3e
+#define TILE_BIG_P_SHADOW_6 0x00
+
+#define TILE_BIG_E_1 0x37
+#define TILE_BIG_E_2 0x3f
+#define TILE_BIG_E_3 0x3d
+#define TILE_BIG_E_4 0x41
+#define TILE_BIG_E_5 0x37
+#define TILE_BIG_E_6 0x3f
+
+#define TILE_BIG_E_SHADOW_1 0x3a
+#define TILE_BIG_E_SHADOW_2 0x40
+#define TILE_BIG_E_SHADOW_3 0x3e
+#define TILE_BIG_E_SHADOW_4 0x42
+#define TILE_BIG_E_SHADOW_5 0x3a
+#define TILE_BIG_E_SHADOW_6 0x40
+
+#define TILE_BIG_R_1 0x3f
+#define TILE_BIG_R_2 0x37
+#define TILE_BIG_R_3 0x3d
+#define TILE_BIG_R_4 0x43
+#define TILE_BIG_R_5 0x3d
+#define TILE_BIG_R_6 0x3d
+
+#define TILE_BIG_R_SHADOW_1 0x40
+#define TILE_BIG_R_SHADOW_2 0x3a
+#define TILE_BIG_R_SHADOW_3 0x3e
+#define TILE_BIG_R_SHADOW_4 0x44
+#define TILE_BIG_R_SHADOW_5 0x3e
+#define TILE_BIG_R_SHADOW_6 0x3e
+
+#define TILE_BIGGER_M_1 0x37
+#define TILE_BIGGER_M_2 0x45
+#define TILE_BIGGER_M_3 0x37
+#define TILE_BIGGER_M_4 0x3d
+#define TILE_BIGGER_M_5 0x3d
+#define TILE_BIGGER_M_6 0x3d
+#define TILE_BIGGER_M_7 0x3d
+#define TILE_BIGGER_M_8 0x3d
+#define TILE_BIGGER_M_9 0x3d
+#define TILE_BIGGER_M_10 0x3d
+#define TILE_BIGGER_M_11 0x3d
+#define TILE_BIGGER_M_12 0x3d
+#define TILE_BIGGER_M_13 0x3d
+#define TILE_BIGGER_M_14 0x3d
+#define TILE_BIGGER_M_15 0x3d
+
+#define TILE_BIGGER_M_SHADOW_1 0x3a
+#define TILE_BIGGER_M_SHADOW_2 0x46
+#define TILE_BIGGER_M_SHADOW_3 0x3a
+#define TILE_BIGGER_M_SHADOW_4 0x3e
+#define TILE_BIGGER_M_SHADOW_5 0x3e
+#define TILE_BIGGER_M_SHADOW_6 0x3e
+#define TILE_BIGGER_M_SHADOW_7 0x3e
+#define TILE_BIGGER_M_SHADOW_8 0x3e
+#define TILE_BIGGER_M_SHADOW_9 0x3e
+#define TILE_BIGGER_M_SHADOW_10 0x3e
+#define TILE_BIGGER_M_SHADOW_11 0x3e
+#define TILE_BIGGER_M_SHADOW_12 0x3e
+#define TILE_BIGGER_M_SHADOW_13 0x3e
+#define TILE_BIGGER_M_SHADOW_14 0x3e
+#define TILE_BIGGER_M_SHADOW_15 0x3e
+
+#define TILE_BIGGER_A_1 0x37
+#define TILE_BIGGER_A_2 0x37
+#define TILE_BIGGER_A_3 0x3d
+#define TILE_BIGGER_A_4 0x3d
+#define TILE_BIGGER_A_5 0x3d
+#define TILE_BIGGER_A_6 0x3d
+#define TILE_BIGGER_A_7 0x3f
+#define TILE_BIGGER_A_8 0x3f
+#define TILE_BIGGER_A_9 0x3d
+#define TILE_BIGGER_A_10 0x3d
+
+#define TILE_BIGGER_A_SHADOW_1 0x3a
+#define TILE_BIGGER_A_SHADOW_2 0x3a
+#define TILE_BIGGER_A_SHADOW_3 0x3e
+#define TILE_BIGGER_A_SHADOW_4 0x3e
+#define TILE_BIGGER_A_SHADOW_5 0x3e
+#define TILE_BIGGER_A_SHADOW_6 0x3e
+#define TILE_BIGGER_A_SHADOW_7 0x40
+#define TILE_BIGGER_A_SHADOW_8 0x40
+#define TILE_BIGGER_A_SHADOW_9 0x3e
+#define TILE_BIGGER_A_SHADOW_10 0x3e
+
+#define TILE_BIGGER_R_1 0x3f
+#define TILE_BIGGER_R_2 0x37
+#define TILE_BIGGER_R_3 0x3d
+#define TILE_BIGGER_R_4 0x3d
+#define TILE_BIGGER_R_5 0x3d
+#define TILE_BIGGER_R_6 0x43
+#define TILE_BIGGER_R_7 0x3d
+#define TILE_BIGGER_R_8 0x3d
+#define TILE_BIGGER_R_9 0x3d
+#define TILE_BIGGER_R_10 0x3d
+
+#define TILE_BIGGER_R_SHADOW_1 0x40
+#define TILE_BIGGER_R_SHADOW_2 0x3a
+#define TILE_BIGGER_R_SHADOW_3 0x3e
+#define TILE_BIGGER_R_SHADOW_4 0x3e
+#define TILE_BIGGER_R_SHADOW_5 0x3e
+#define TILE_BIGGER_R_SHADOW_6 0x44
+#define TILE_BIGGER_R_SHADOW_7 0x3e
+#define TILE_BIGGER_R_SHADOW_8 0x3e
+#define TILE_BIGGER_R_SHADOW_9 0x3e
+#define TILE_BIGGER_R_SHADOW_10 0x3e
+
+#define TILE_BIGGER_I_1 0x3d
+#define TILE_BIGGER_I_2 0x3d
+#define TILE_BIGGER_I_3 0x3d
+#define TILE_BIGGER_I_4 0x3d
+#define TILE_BIGGER_I_5 0x3d
+
+#define TILE_BIGGER_I_SHADOW_1 0x3e
+#define TILE_BIGGER_I_SHADOW_2 0x3e
+#define TILE_BIGGER_I_SHADOW_3 0x3e
+#define TILE_BIGGER_I_SHADOW_4 0x3e
+#define TILE_BIGGER_I_SHADOW_5 0x3e
+
+#define TILE_BIGGER_O_1 0x37
+#define TILE_BIGGER_O_2 0x37
+#define TILE_BIGGER_O_3 0x3d
+#define TILE_BIGGER_O_4 0x3d
+#define TILE_BIGGER_O_5 0x3d
+#define TILE_BIGGER_O_6 0x3d
+#define TILE_BIGGER_O_7 0x3d
+#define TILE_BIGGER_O_8 0x3d
+#define TILE_BIGGER_O_9 0x37
+#define TILE_BIGGER_O_10 0x37
+
+#define TILE_BIGGER_O_SHADOW_1 0x3a
+#define TILE_BIGGER_O_SHADOW_2 0x3a
+#define TILE_BIGGER_O_SHADOW_3 0x3e
+#define TILE_BIGGER_O_SHADOW_4 0x3e
+#define TILE_BIGGER_O_SHADOW_5 0x3e
+#define TILE_BIGGER_O_SHADOW_6 0x3e
+#define TILE_BIGGER_O_SHADOW_7 0x3e
+#define TILE_BIGGER_O_SHADOW_8 0x3e
+#define TILE_BIGGER_O_SHADOW_9 0x3a
+#define TILE_BIGGER_O_SHADOW_10 0x3a
+
+#define TILE_BIGGER_B_1 0x3f
+#define TILE_BIGGER_B_2 0x37
+#define TILE_BIGGER_B_3 0x3d
+#define TILE_BIGGER_B_4 0x3d
+#define TILE_BIGGER_B_5 0x3d
+#define TILE_BIGGER_B_6 0x43
+#define TILE_BIGGER_B_7 0x3d
+#define TILE_BIGGER_B_8 0x3d
+#define TILE_BIGGER_B_9 0x3d
+#define TILE_BIGGER_B_10 0x37
+
+#define TILE_BIGGER_B_SHADOW_1 0x40
+#define TILE_BIGGER_B_SHADOW_2 0x3a
+#define TILE_BIGGER_B_SHADOW_3 0x3e
+#define TILE_BIGGER_B_SHADOW_4 0x3e
+#define TILE_BIGGER_B_SHADOW_5 0x3e
+#define TILE_BIGGER_B_SHADOW_6 0x44
+#define TILE_BIGGER_B_SHADOW_7 0x3e
+#define TILE_BIGGER_B_SHADOW_8 0x3e
+#define TILE_BIGGER_B_SHADOW_9 0x3e
+#define TILE_BIGGER_B_SHADOW_10 0x3a
+
+#define TILE_BIGGER_S_1 0x37
+#define TILE_BIGGER_S_2 0x37
+#define TILE_BIGGER_S_3 0x3d
+#define TILE_BIGGER_S_4 0x3d
+#define TILE_BIGGER_S_5 0x38
+#define TILE_BIGGER_S_6 0x39
+#define TILE_BIGGER_S_7 0x3d
+#define TILE_BIGGER_S_8 0x3d
+#define TILE_BIGGER_S_9 0x37
+#define TILE_BIGGER_S_10 0x37
+
+#define TILE_BIGGER_S_SHADOW_1 0x3a
+#define TILE_BIGGER_S_SHADOW_2 0x3a
+#define TILE_BIGGER_S_SHADOW_3 0x3e
+#define TILE_BIGGER_S_SHADOW_4 0x3e
+#define TILE_BIGGER_S_SHADOW_5 0x3b
+#define TILE_BIGGER_S_SHADOW_6 0x3c
+#define TILE_BIGGER_S_SHADOW_7 0x3e
+#define TILE_BIGGER_S_SHADOW_8 0x3e
+#define TILE_BIGGER_S_SHADOW_9 0x3a
+#define TILE_BIGGER_S_SHADOW_10 0x3a
+
+#define TILE_BIGGER_DOT 0x3d
+#define TILE_BIGGER_DOT_SHADOW 0x3e
+
+#define TILE_COUNT 0x47
 
 struct tile_data {
     unsigned char index[64];

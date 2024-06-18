@@ -12,6 +12,7 @@ int main()
         window_update();
         renderer_clear();
         renderer_1_player_hud();
+        renderer_texture(TEXTURE_LOGO, 40, 32);
         renderer_present();
     }
     

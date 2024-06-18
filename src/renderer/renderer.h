@@ -3,8 +3,8 @@
 
 #include "renderer/data/biome.h"
 
-#define TEXTURE_GROUND  0x00
-#define TEXTURE_COUNT   0x01
+#define TEXTURE_LOGO 0x00
+#define TEXTURE_COUNT 0x01
 
 int renderer_init();
 void renderer_destroy();
