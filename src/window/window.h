@@ -4,6 +4,7 @@
 int window_init(const char *t, int w, int h);
 void window_destroy();
 void window_update();
+void window_close();
 int window_is_open();
 int window_pressed_right_arrow();
 int window_pressed_left_arrow();

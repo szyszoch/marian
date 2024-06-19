@@ -297,7 +297,9 @@
 #define TILE_BIGGER_DOT 0x3d
 #define TILE_BIGGER_DOT_SHADOW 0x3e
 
-#define TILE_COUNT 0x47
+#define TILE_MUSHROOM_ICON 0x47
+
+#define TILE_COUNT 0x48
 
 struct tile_data {
     unsigned char index[64];

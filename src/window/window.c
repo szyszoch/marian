@@ -44,6 +44,11 @@ void window_update()
     glfwPollEvents();
 }
 
+void window_close()
+{
+    glfwSetWindowShouldClose(window, 1);
+}
+
 int window_is_open()
 {
     return !glfwWindowShouldClose(window);
