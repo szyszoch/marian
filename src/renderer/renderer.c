@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "renderer/renderer.h"
 #include "renderer/data/palettes.h"
-#include "renderer/data/palette_set.h"
+#include "renderer/data/paletteset.h"
 #include "renderer/data/tiles.h"
 #include "renderer/data/tileset.h"
 

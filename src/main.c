@@ -7,7 +7,7 @@ int main()
     window_init("Marian", 1024, 960);
     renderer_init();
     state_change(STATE_MENU);
-    renderer_set_biome(BIOME_UNDERGROUND);
+    renderer_set_biome(BIOME_OVERWORLD);
 
     while (window_is_open())
     {

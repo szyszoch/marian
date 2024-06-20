@@ -1,4 +1,4 @@
-#include "renderer/data/palette_set.h"
+#include "renderer/data/paletteset.h"
 #include "renderer/data/palettes.h"
 
 const unsigned char palette_sets[][BIOME_COUNT] = {
