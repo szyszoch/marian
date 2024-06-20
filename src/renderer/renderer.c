@@ -250,7 +250,7 @@ static void render_number_zero_padding(unsigned int number,
 {
     while(size--) {
         unsigned char d = convert_digit_to_tile(number);
-        render_tile(d, PALETTE_SET_TEXT, x + size * 8, y, 0);
+        render_tile(d, PALETTESET_TEXT, x + size * 8, y, 0);
         number /= 10;
     };
 }
@@ -260,7 +260,7 @@ static void render_number(unsigned int number, short end_x, short y)
     while (number) {
         end_x -= 8;
         unsigned char d = convert_digit_to_tile(number);
-        render_tile(d, PALETTE_SET_TEXT, end_x, y, 0);
+        render_tile(d, PALETTESET_TEXT, end_x, y, 0);
         number /= 10;
     };
 }
@@ -307,7 +307,7 @@ static void render_text(const char *text, short x, short y)
     int i = 0;
     while (text[i]) {
         unsigned char tile = convert_letter_to_tile(text[i]);
-        render_tile(tile, PALETTE_SET_TEXT, x + 8 * i, y, 0);
+        render_tile(tile, PALETTESET_TEXT, x + 8 * i, y, 0);
         i++;
     }
 }
@@ -400,82 +400,81 @@ void renderer_texture(unsigned char t, short x, short y)
 {
     switch(t) {
         case TEXTURE_LOGO: {
-            render_tileset(&tilesets[TILESET_LOGO_BOARD], 
-                PALETTE_SET_GROUND_AND_STONE, x, y);
-            
+            render_tileset(&tilesets[TILESET_LOGO_BOARD], PALETTESET_STONE, x, 
+                y);
             render_tileset(&tilesets[TILESET_BIG_S_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 9, y + 12);
+                PALETTESET_STONE, x + 9, y + 12);
             render_tileset(&tilesets[TILESET_BIG_S],
-                PALETTE_SET_GROUND_AND_STONE, x + 8, y + 8);
+                PALETTESET_STONE, x + 8, y + 8);
 
             render_tileset(&tilesets[TILESET_BIG_U_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 25, y + 12);
+                PALETTESET_STONE, x + 25, y + 12);
             render_tileset(&tilesets[TILESET_BIG_U],
-                PALETTE_SET_GROUND_AND_STONE, x + 24, y + 8);
+                PALETTESET_STONE, x + 24, y + 8);
 
             render_tileset(&tilesets[TILESET_BIG_P_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 41, y + 12);
+                PALETTESET_STONE, x + 41, y + 12);
             render_tileset(&tilesets[TILESET_BIG_P],
-                PALETTE_SET_GROUND_AND_STONE, x + 40, y + 8);
+                PALETTESET_STONE, x + 40, y + 8);
 
             render_tileset(&tilesets[TILESET_BIG_E_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 57, y + 12);
+                PALETTESET_STONE, x + 57, y + 12);
             render_tileset(&tilesets[TILESET_BIG_E],
-                PALETTE_SET_GROUND_AND_STONE, x + 56, y + 8);
+                PALETTESET_STONE, x + 56, y + 8);
             
             render_tileset(&tilesets[TILESET_BIG_R_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 73, y + 12);
+                PALETTESET_STONE, x + 73, y + 12);
             render_tileset(&tilesets[TILESET_BIG_R],
-                PALETTE_SET_GROUND_AND_STONE, x + 72, y + 8);
+                PALETTESET_STONE, x + 72, y + 8);
 
             render_tileset(&tilesets[TILESET_BIGGER_M_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 9, y + 44);
+                PALETTESET_STONE, x + 9, y + 44);
             render_tileset(&tilesets[TILESET_BIGGER_M],
-                PALETTE_SET_GROUND_AND_STONE, x + 8, y + 40);
+                PALETTESET_STONE, x + 8, y + 40);
 
             render_tileset(&tilesets[TILESET_BIGGER_A_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 33, y + 44);
+                PALETTESET_STONE, x + 33, y + 44);
             render_tileset(&tilesets[TILESET_BIGGER_A],
-                PALETTE_SET_GROUND_AND_STONE, x + 32, y + 40);
+                PALETTESET_STONE, x + 32, y + 40);
 
             render_tileset(&tilesets[TILESET_BIGGER_R_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 49, y + 44);
+                PALETTESET_STONE, x + 49, y + 44);
             render_tileset(&tilesets[TILESET_BIGGER_R],
-                PALETTE_SET_GROUND_AND_STONE, x + 48, y + 40);
+                PALETTESET_STONE, x + 48, y + 40);
 
             render_tileset(&tilesets[TILESET_BIGGER_I_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 65, y + 44);
+                PALETTESET_STONE, x + 65, y + 44);
             render_tileset(&tilesets[TILESET_BIGGER_I],
-                PALETTE_SET_GROUND_AND_STONE, x + 64, y + 40);
+                PALETTESET_STONE, x + 64, y + 40);
 
             render_tileset(&tilesets[TILESET_BIGGER_O_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 73, y + 44);
+                PALETTESET_STONE, x + 73, y + 44);
             render_tileset(&tilesets[TILESET_BIGGER_O],
-                PALETTE_SET_GROUND_AND_STONE, x + 72, y + 40);
+                PALETTESET_STONE, x + 72, y + 40);
 
             render_tileset(&tilesets[TILESET_BIGGER_B_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 97, y + 44);
+                PALETTESET_STONE, x + 97, y + 44);
             render_tileset(&tilesets[TILESET_BIGGER_B],
-                PALETTE_SET_GROUND_AND_STONE, x + 96, y + 40);
+                PALETTESET_STONE, x + 96, y + 40);
 
             render_tileset(&tilesets[TILESET_BIGGER_R_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 113, y + 44);
+                PALETTESET_STONE, x + 113, y + 44);
             render_tileset(&tilesets[TILESET_BIGGER_R],
-                PALETTE_SET_GROUND_AND_STONE, x + 112, y + 40);
+                PALETTESET_STONE, x + 112, y + 40);
 
             render_tileset(&tilesets[TILESET_BIGGER_O_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 129, y + 44);
+                PALETTESET_STONE, x + 129, y + 44);
             render_tileset(&tilesets[TILESET_BIGGER_O],
-                PALETTE_SET_GROUND_AND_STONE, x + 128, y + 40);
+                PALETTESET_STONE, x + 128, y + 40);
 
             render_tileset(&tilesets[TILESET_BIGGER_S_SHADOW],
-                PALETTE_SET_GROUND_AND_STONE, x + 145, y + 44);
+                PALETTESET_STONE, x + 145, y + 44);
             render_tileset(&tilesets[TILESET_BIGGER_S],
-                PALETTE_SET_GROUND_AND_STONE, x + 144, y + 40);
+                PALETTESET_STONE, x + 144, y + 40);
 
-            render_tile(TILE_BIGGER_DOT_SHADOW, PALETTE_SET_GROUND_AND_STONE,
+            render_tile(TILE_BIGGER_DOT_SHADOW, PALETTESET_STONE,
                 x + 161, y + 76, 0);
-            render_tile(TILE_BIGGER_DOT, PALETTE_SET_GROUND_AND_STONE,
+            render_tile(TILE_BIGGER_DOT, PALETTESET_STONE,
                 x + 160, y + 72, 0);
             break;
         }
@@ -486,12 +485,12 @@ void renderer_1_player_hud()
 {
     render_text("MARIO", 24, 16);
     render_number_zero_padding(score, 6, 24, 24);
-    render_tile(TILE_COIN_ICON, PALETTE_SET_COINS_1, 88, 24, 0);
-    render_tile(TILE_SMALL_X, PALETTE_SET_TEXT, 96, 24, 0);
+    render_tile(TILE_COIN_ICON, PALETTESET_COINS_1, 88, 24, 0);
+    render_tile(TILE_SMALL_X, PALETTESET_TEXT, 96, 24, 0);
     render_number_zero_padding(coins, 2, 104, 24);
     render_text("WORLD", 144, 16);
     render_number_zero_padding(world, 1, 152, 24);
-    render_tile(TILE_MINUS, PALETTE_SET_TEXT, 160, 24, 0);
+    render_tile(TILE_MINUS, PALETTESET_TEXT, 160, 24, 0);
     render_number_zero_padding(level, 1, 168, 24);
     render_text("TIME", 200, 16);
     render_number(time, 232, 24);
