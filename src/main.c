@@ -6,8 +6,8 @@ int main()
 {
     window_init("Marian", 1024, 960);
     renderer_init();
-    renderer_set_background_color(0x94, 0x94, 0xff);
     state_change(STATE_MENU);
+    renderer_set_biome(BIOME_UNDERGROUND);
 
     while (window_is_open())
     {

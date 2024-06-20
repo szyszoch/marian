@@ -11,10 +11,11 @@
 #define GAME_HEIGHT 240
 #define BATCH_SIZE 1024
 
-#define FLIP_NONE       0x00
-#define FLIP_RIGHT      0x01
-#define FLIP_HORIZONTAL 0x02
-#define FLIP_VERTICAL   0x04
+struct fcolor {
+    float r;
+    float g;
+    float b;
+};
 
 struct vec2 {
     float x;
@@ -56,7 +57,9 @@ static unsigned int bd_count;
 
 static unsigned char biome;
 
-static float bg_color[3];
+static struct fcolor color1 = {0.5803921f, 0.5803921f, 1.0f};
+static struct fcolor color2 = {0.0f, 0.0f, 0.0f};
+static struct fcolor *bg_color;
 
 static void set_default_2d_texture_parameters()
 {
@@ -344,7 +347,6 @@ int renderer_init()
     }
 
     renderer_set_biome(BIOME_OVERWORLD);
-    renderer_set_background_color(0, 0, 0);
     return glGetError();
 }
 
@@ -382,20 +384,16 @@ void renderer_present()
 void renderer_clear()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(bg_color[0], bg_color[1], bg_color[2], 1.0f);
+    glClearColor(bg_color->r, bg_color->g, bg_color->b, 1.0f);
 }
 
 void renderer_set_biome(unsigned char b)
 {
     biome = b;
-}
-
-void renderer_set_background_color(unsigned char r, unsigned char g,
-    unsigned char b)
-{
-    bg_color[0] = (float) r / 0xff;
-    bg_color[1] = (float) g / 0xff;
-    bg_color[2] = (float) b / 0xff;
+    if (b == BIOME_UNDERGROUND || b == BIOME_CASTLE)
+        bg_color = &color2;
+    else
+        bg_color = &color1;
 }
 
 void renderer_texture(unsigned char t, short x, short y)
