@@ -299,7 +299,12 @@
 
 #define TILE_MUSHROOM_ICON 0x47
 
-#define TILE_COUNT 0x48
+#define TILE_MARIO_1 0x48
+#define TILE_MARIO_2 0x49
+#define TILE_MARIO_3 0x4a
+#define TILE_MARIO_4 0x4b
+
+#define TILE_COUNT 0x4c
 
 struct tile_data {
     unsigned char index[64];
