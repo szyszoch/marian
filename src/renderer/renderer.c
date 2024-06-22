@@ -5,7 +5,7 @@
 #include "renderer/data/palettes.h"
 #include "renderer/data/paletteset.h"
 #include "renderer/data/tiles.h"
-#include "renderer/data/tileset.h"
+#include "renderer/tileset/tileset.h"
 
 #define GAME_WIDTH 256
 #define GAME_HEIGHT 240
@@ -224,7 +224,7 @@ static void render_tile(unsigned char t, unsigned char ps, short x, short y,
     bd_count++;
 }
 
-static void render_tileset(struct tileset* ts, unsigned char ps, short x,
+static void render_tileset(const struct tileset* ts, unsigned char ps, short x,
     short y)
 {
     for (unsigned char h = 0; h < ts->height; h++) {
@@ -400,76 +400,76 @@ void renderer_texture(unsigned char t, short x, short y)
 {
     switch(t) {
         case TEXTURE_LOGO: {
-            render_tileset(&tilesets[TILESET_LOGO_BOARD], PALETTESET_STONE, x, 
+            render_tileset(tilesets[TILESET_LOGO_BOARD], PALETTESET_STONE, x, 
                 y);
-            render_tileset(&tilesets[TILESET_BIG_S_SHADOW],
+            render_tileset(tilesets[TILESET_BIG_S_SHADOW],
                 PALETTESET_STONE, x + 9, y + 12);
-            render_tileset(&tilesets[TILESET_BIG_S],
+            render_tileset(tilesets[TILESET_BIG_S],
                 PALETTESET_STONE, x + 8, y + 8);
 
-            render_tileset(&tilesets[TILESET_BIG_U_SHADOW],
+            render_tileset(tilesets[TILESET_BIG_U_SHADOW],
                 PALETTESET_STONE, x + 25, y + 12);
-            render_tileset(&tilesets[TILESET_BIG_U],
+            render_tileset(tilesets[TILESET_BIG_U],
                 PALETTESET_STONE, x + 24, y + 8);
 
-            render_tileset(&tilesets[TILESET_BIG_P_SHADOW],
+            render_tileset(tilesets[TILESET_BIG_P_SHADOW],
                 PALETTESET_STONE, x + 41, y + 12);
-            render_tileset(&tilesets[TILESET_BIG_P],
+            render_tileset(tilesets[TILESET_BIG_P],
                 PALETTESET_STONE, x + 40, y + 8);
 
-            render_tileset(&tilesets[TILESET_BIG_E_SHADOW],
+            render_tileset(tilesets[TILESET_BIG_E_SHADOW],
                 PALETTESET_STONE, x + 57, y + 12);
-            render_tileset(&tilesets[TILESET_BIG_E],
+            render_tileset(tilesets[TILESET_BIG_E],
                 PALETTESET_STONE, x + 56, y + 8);
             
-            render_tileset(&tilesets[TILESET_BIG_R_SHADOW],
+            render_tileset(tilesets[TILESET_BIG_R_SHADOW],
                 PALETTESET_STONE, x + 73, y + 12);
-            render_tileset(&tilesets[TILESET_BIG_R],
+            render_tileset(tilesets[TILESET_BIG_R],
                 PALETTESET_STONE, x + 72, y + 8);
 
-            render_tileset(&tilesets[TILESET_BIGGER_M_SHADOW],
+            render_tileset(tilesets[TILESET_BIGGER_M_SHADOW],
                 PALETTESET_STONE, x + 9, y + 44);
-            render_tileset(&tilesets[TILESET_BIGGER_M],
+            render_tileset(tilesets[TILESET_BIGGER_M],
                 PALETTESET_STONE, x + 8, y + 40);
 
-            render_tileset(&tilesets[TILESET_BIGGER_A_SHADOW],
+            render_tileset(tilesets[TILESET_BIGGER_A_SHADOW],
                 PALETTESET_STONE, x + 33, y + 44);
-            render_tileset(&tilesets[TILESET_BIGGER_A],
+            render_tileset(tilesets[TILESET_BIGGER_A],
                 PALETTESET_STONE, x + 32, y + 40);
 
-            render_tileset(&tilesets[TILESET_BIGGER_R_SHADOW],
+            render_tileset(tilesets[TILESET_BIGGER_R_SHADOW],
                 PALETTESET_STONE, x + 49, y + 44);
-            render_tileset(&tilesets[TILESET_BIGGER_R],
+            render_tileset(tilesets[TILESET_BIGGER_R],
                 PALETTESET_STONE, x + 48, y + 40);
 
-            render_tileset(&tilesets[TILESET_BIGGER_I_SHADOW],
+            render_tileset(tilesets[TILESET_BIGGER_I_SHADOW],
                 PALETTESET_STONE, x + 65, y + 44);
-            render_tileset(&tilesets[TILESET_BIGGER_I],
+            render_tileset(tilesets[TILESET_BIGGER_I],
                 PALETTESET_STONE, x + 64, y + 40);
 
-            render_tileset(&tilesets[TILESET_BIGGER_O_SHADOW],
+            render_tileset(tilesets[TILESET_BIGGER_O_SHADOW],
                 PALETTESET_STONE, x + 73, y + 44);
-            render_tileset(&tilesets[TILESET_BIGGER_O],
+            render_tileset(tilesets[TILESET_BIGGER_O],
                 PALETTESET_STONE, x + 72, y + 40);
 
-            render_tileset(&tilesets[TILESET_BIGGER_B_SHADOW],
+            render_tileset(tilesets[TILESET_BIGGER_B_SHADOW],
                 PALETTESET_STONE, x + 97, y + 44);
-            render_tileset(&tilesets[TILESET_BIGGER_B],
+            render_tileset(tilesets[TILESET_BIGGER_B],
                 PALETTESET_STONE, x + 96, y + 40);
 
-            render_tileset(&tilesets[TILESET_BIGGER_R_SHADOW],
+            render_tileset(tilesets[TILESET_BIGGER_R_SHADOW],
                 PALETTESET_STONE, x + 113, y + 44);
-            render_tileset(&tilesets[TILESET_BIGGER_R],
+            render_tileset(tilesets[TILESET_BIGGER_R],
                 PALETTESET_STONE, x + 112, y + 40);
 
-            render_tileset(&tilesets[TILESET_BIGGER_O_SHADOW],
+            render_tileset(tilesets[TILESET_BIGGER_O_SHADOW],
                 PALETTESET_STONE, x + 129, y + 44);
-            render_tileset(&tilesets[TILESET_BIGGER_O],
+            render_tileset(tilesets[TILESET_BIGGER_O],
                 PALETTESET_STONE, x + 128, y + 40);
 
-            render_tileset(&tilesets[TILESET_BIGGER_S_SHADOW],
+            render_tileset(tilesets[TILESET_BIGGER_S_SHADOW],
                 PALETTESET_STONE, x + 145, y + 44);
-            render_tileset(&tilesets[TILESET_BIGGER_S],
+            render_tileset(tilesets[TILESET_BIGGER_S],
                 PALETTESET_STONE, x + 144, y + 40);
 
             render_tile(TILE_BIGGER_DOT_SHADOW, PALETTESET_STONE,
