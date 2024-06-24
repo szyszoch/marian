@@ -1,7 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "renderer/data/biome.h"
+#include "biome.h"
 
 #define TEXTURE_LOGO 0x00
 #define TEXTURE_COUNT 0x01

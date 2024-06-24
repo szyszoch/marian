@@ -1,5 +1,5 @@
-#include "renderer/tileset/tileset.h"
-#include "renderer/data/tiles.h"
+#include "tileset.h"
+#include "tiles.h"
 
 const struct tileset logo_board = {
     .width = 22,

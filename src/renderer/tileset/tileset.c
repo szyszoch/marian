@@ -1,5 +1,5 @@
-#include "renderer/tileset/tileset.h"
-#include "renderer/data/tiles.h"
+#include "tileset.h"
+#include "tiles.h"
 
 extern const struct tileset logo_board;
 extern const struct tileset big_e;

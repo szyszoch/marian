@@ -1,5 +1,5 @@
-#include "state/state.h"
-#include "window/window.h"
+#include "state.h"
+#include "window.h"
 
 static unsigned char current_state;
 

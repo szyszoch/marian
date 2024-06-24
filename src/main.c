@@ -1,6 +1,6 @@
-#include "renderer/renderer.h"
-#include "window/window.h"
-#include "state/state.h"
+#include "renderer.h"
+#include "window.h"
+#include "state.h"
 
 int main()
 {

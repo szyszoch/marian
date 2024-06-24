@@ -1,5 +1,5 @@
-#include "state/state.h"
-#include "renderer/renderer.h"
+#include "state.h"
+#include "renderer.h"
 
 void state_menu_render()
 {

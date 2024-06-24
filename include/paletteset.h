@@ -1,7 +1,7 @@
 #ifndef PALETTESET_H
 #define PALETTESET_H
 
-#include "renderer/data/biome.h"
+#include "biome.h"
 
 #define PALETTESET_STONE 0x00
 #define PALETTESET_COINS_1 0x01

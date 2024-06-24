@@ -1,11 +1,11 @@
 #include <glad/glad.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "renderer/renderer.h"
-#include "renderer/data/palettes.h"
-#include "renderer/data/paletteset.h"
-#include "renderer/data/tiles.h"
-#include "renderer/tileset/tileset.h"
+#include "renderer.h"
+#include "palettes.h"
+#include "paletteset.h"
+#include "tiles.h"
+#include "tileset.h"
 
 #define GAME_WIDTH 256
 #define GAME_HEIGHT 240

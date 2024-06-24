@@ -1,4 +1,4 @@
-#include "renderer/data/palettes.h"
+#include "palettes.h"
 
 /**
  *  Each tile is composed of four different colors. One of these colors

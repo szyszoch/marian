@@ -1,5 +1,5 @@
-#include "renderer/tileset/tileset.h"
-#include "renderer/data/tiles.h"
+#include "tileset.h"
+#include "tiles.h"
 
 const struct tileset bigger_o_shadow = {
     .width = 2,

@@ -4,7 +4,7 @@ OBJS := $(SRCS:src/%.c=obj/%.o) obj/glad.o
 
 CC := gcc
 CFLAGS := -Wall -Wextra -Werror
-CPPFLAGS := -I ./src -I ./lib -I ./lib/glfw/include
+CPPFLAGS := -I ./include -I ./lib -I ./lib/glfw/include
 LDFLAGS := -Llib/glfw/build/src
 LDLIBS := -lglfw3 -lgdi32
 
