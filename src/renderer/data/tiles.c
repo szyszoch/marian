@@ -90,6 +90,7 @@ const struct compressed_tile_data tiles[] = {
     {{0x50005540,0xb800ba80,0xaea0bfc0,0xaa00f000}},
     {{0x03f70ff5,0x0ad90a95,0x0a550054,0x03f00ff0}},
     {{0xdfc05ff0,0x67a056a0,0x55a01500,0x0fc00ff0}},
+    {{0xaaabaaab,0xaaabffff,0xabaaabaa,0xabaaffff}},
 };
 
 static struct tile_data decompress_tile_data(
