@@ -27,6 +27,7 @@ extern const struct tileset bigger_o_shadow;
 extern const struct tileset bigger_r_shadow;
 extern const struct tileset bigger_s_shadow;
 
+// clang-format off
 const struct tileset *tilesets[] = {
     &logo_board,
     &big_e,

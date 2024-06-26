@@ -1,10 +1,10 @@
 #ifndef TILES_H
 #define TILES_H
 
-#define FLIP_NONE       0x00
-#define FLIP_RIGHT      0x01
+#define FLIP_NONE 0x00
+#define FLIP_RIGHT 0x01
 #define FLIP_HORIZONTAL 0x02
-#define FLIP_VERTICAL   0x04
+#define FLIP_VERTICAL 0x04
 
 #define TILE_NONE 0x00
 #define TILE_FIRST_COLOR 0x01
@@ -317,7 +317,7 @@
 #define TILE_COUNT 0x4e
 
 struct tile_data {
-    unsigned char index[64];
+	unsigned char index[64];
 };
 
 struct tile_data get_tile_data(unsigned char t);

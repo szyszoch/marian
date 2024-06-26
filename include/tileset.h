@@ -29,10 +29,10 @@
 #define TILESET_COUNT 0x19
 
 struct tileset {
-    unsigned char width;
-    unsigned char height;
-    unsigned char *tiles;
-    unsigned char *flips;
+	unsigned char width;
+	unsigned char height;
+	unsigned char *tiles;
+	unsigned char *flips;
 };
 
 extern const struct tileset *tilesets[];

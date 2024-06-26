@@ -2,30 +2,32 @@
 #include "tiles.h"
 
 const struct tileset bigger_b = {
-    .width = 2,
-    .height = 5,
-    .tiles = (unsigned char[]) {
-        TILE_BIGGER_B_1,
-        TILE_BIGGER_B_2,
-        TILE_BIGGER_B_3,
-        TILE_BIGGER_B_4,
-        TILE_BIGGER_B_5,
-        TILE_BIGGER_B_6,
-        TILE_BIGGER_B_7,
-        TILE_BIGGER_B_8,
-        TILE_BIGGER_B_9,
-        TILE_BIGGER_B_10,
-    },
-    .flips = (unsigned char[]) {
-        FLIP_NONE,
-        FLIP_HORIZONTAL,
-        FLIP_NONE,
-        FLIP_NONE,
-        FLIP_NONE,
-        FLIP_NONE,
-        FLIP_NONE,
-        FLIP_NONE,
-        FLIP_NONE,
-        FLIP_VERTICAL | FLIP_HORIZONTAL,
-    },
+	.width = 2,
+	.height = 5,
+	.tiles =
+		(unsigned char[]){
+			TILE_BIGGER_B_1,
+			TILE_BIGGER_B_2,
+			TILE_BIGGER_B_3,
+			TILE_BIGGER_B_4,
+			TILE_BIGGER_B_5,
+			TILE_BIGGER_B_6,
+			TILE_BIGGER_B_7,
+			TILE_BIGGER_B_8,
+			TILE_BIGGER_B_9,
+			TILE_BIGGER_B_10,
+		},
+	.flips =
+		(unsigned char[]){
+			FLIP_NONE,
+			FLIP_HORIZONTAL,
+			FLIP_NONE,
+			FLIP_NONE,
+			FLIP_NONE,
+			FLIP_NONE,
+			FLIP_NONE,
+			FLIP_NONE,
+			FLIP_NONE,
+			FLIP_VERTICAL | FLIP_HORIZONTAL,
+		},
 };

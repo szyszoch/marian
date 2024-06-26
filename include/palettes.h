@@ -20,15 +20,15 @@
 #define PALETTE_COUNT 0x10
 
 struct color {
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
 };
 
 struct palette {
-    struct color c1;
-    struct color c2;
-    struct color c3;
+	struct color c1;
+	struct color c2;
+	struct color c3;
 };
 
 extern const struct palette palettes[];
