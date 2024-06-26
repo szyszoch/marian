@@ -309,7 +309,12 @@
 #define TILE_BRICK_3 0x4c
 #define TILE_BRICK_4 0x4c
 
-#define TILE_COUNT 0x4c
+#define TILE_ROOF_BRICK_1 0x4d
+#define TILE_ROOF_BRICK_2 0x4d
+#define TILE_ROOF_BRICK_3 0x4c
+#define TILE_ROOF_BRICK_4 0x4c
+
+#define TILE_COUNT 0x4e
 
 struct tile_data {
     unsigned char index[64];
