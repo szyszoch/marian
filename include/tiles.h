@@ -329,7 +329,12 @@
 #define TILE_INSIDE_TEETH_BRICK_3 0x4c
 #define TILE_INSIDE_TEETH_BRICK_4 0x4c
 
-#define TILE_COUNT 0x53
+#define TILE_BRICK_ENTRANCE_1 0x53
+#define TILE_BRICK_ENTRANCE_2 0x54
+#define TILE_BRICK_ENTRANCE_3 0x03
+#define TILE_BRICK_ENTRANCE_4 0x03
+
+#define TILE_COUNT 0x55
 
 struct tile_data {
 	unsigned char index[64];
