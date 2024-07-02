@@ -1,5 +1,4 @@
 #include "state.h"
-#include "window.h"
 
 static unsigned char current_state;
 
@@ -24,7 +23,6 @@ void state_change(unsigned char s)
 	current_state = s;
 	switch (s) {
 	case STATE_QUIT:
-		window_close();
 		break;
 	case STATE_MENU:
 		render_func = state_menu_render;

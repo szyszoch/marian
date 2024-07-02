@@ -1,20 +1,12 @@
 NAME := marian
 SRCS := $(wildcard src/*.c src/**/*.c src/**/**/*.c) 
-OBJS := $(SRCS:src/%.c=obj/%.o) obj/glad.o
+OBJS := $(SRCS:src/%.c=obj/%.o)
 
 CC := gcc
 CFLAGS := -Wall -Wextra -Werror
-CPPFLAGS := -I ./include -I ./lib -I ./lib/glfw/include
-LDFLAGS := -Llib/glfw/build/src
-LDLIBS := -lglfw3
+CPPFLAGS := -I ./include
 
-ifeq ($(OS),Windows_NT)
-LDLIBS += -lgdi32
-else
-LDLIBS += -lm -lX11  -lGL
-endif
-
-all: dirs libs $(NAME)
+all: dirs $(NAME)
 
 dirs:
 ifeq ($(OS),Windows_NT)
@@ -23,19 +15,10 @@ ifeq ($(OS),Windows_NT)
 else
 	@mkdir -p obj bin
 endif
-libs:
-	$(info Compiling glad library)
-	@$(CC) -o obj/glad.o -c lib/glad/glad.c -Ilib/glad
-	$(info Compiling glfw library)
-	@cd lib/glfw && \
-		cmake -S . -B build -D GLFW_BUILD_DOCS=off -D GLFW_BUILD_EXAMPLES=off \
-		-D GLFW_BUILD_TESTS=off -G "Unix Makefiles" && \
-		cd build && \
-		make --silent
 
 $(NAME): $(OBJS)
 	$(info Compiling program)
-	@$(CC) $(LDFLAGS) $(OBJS) $(LDLIBS) -o bin/$(NAME)
+	@$(CC) $(OBJS) -o bin/$(NAME)
 	$(info Compiling completed)
 
 obj/%.o: src/%.c
